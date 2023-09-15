@@ -1,16 +1,16 @@
 from .base import BaseAdminModel
-from .suggestion import SuggestEditTutorialModel
-from .tutorial import BachataTutorialModel
+from .suggestion import SuggestionModel
+from .tutorial import TutorialModel
 from .user import UserModel
 
 
 __all__ = [
     # Base
     "BaseAdminModel",
-    # Edit
-    "SuggestEditTutorialModel",
-    # Bachata
-    "BachataTutorialModel",
+    # Suggesntion
+    "SuggestionModel",
+    # Tutorial
+    "TutorialModel",
     # User
     "UserModel",
 ]

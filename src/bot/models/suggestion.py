@@ -1,16 +1,11 @@
 from datetime import datetime
 
-from bson.objectid import ObjectId
-from pydantic import Field
-
 from src.bot.enums import BachataLessonLevel, BachataLessonStatus, BachataLessonType, SuggestionStatus
 
-from .base import BaseAdminModel, PyObjectId
+from .base import BaseAdminModel
 
 
-class _SuggestEditTutorialModel(BaseAdminModel):
-    """Mongo object."""
-
+class SuggestionModel(BaseAdminModel):
     suggestion_id: str
     tg_unique_file_id: str
     edit_lesson_description: str
@@ -22,7 +17,3 @@ class _SuggestEditTutorialModel(BaseAdminModel):
     suggested_by: int
     is_active: bool
     created_at: datetime
-
-
-class SuggestEditTutorialModel(_SuggestEditTutorialModel):
-    obj_id: ObjectId = Field(default_factory=PyObjectId, alias="_id")

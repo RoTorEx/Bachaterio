@@ -5,7 +5,7 @@ from aiogram_dialog import DialogManager
 from aiogram_dialog.api.entities import MediaAttachment, MediaId
 
 from src.bot.enums import BachataLessonLevel, BachataLessonType, SelectOrder
-from src.bot.models import BachataTutorialModel
+from src.bot.models import TutorialModel
 from src.infrastructure.database import cursor
 
 
@@ -39,7 +39,7 @@ async def get_data_watch_dialog(dialog_manager: DialogManager, **kwargs):
         if unique_ids:
             unique_id = r.choice(unique_ids)
             document = cursor.tutorials.find_one({"tg_unique_file_id": unique_id})
-            tutorial = BachataTutorialModel.model_validate(document)
+            tutorial = TutorialModel.model_validate(document)
 
     else:
         sorting_order = -1 if sorting_order == SelectOrder.NEWEST else 1
@@ -49,7 +49,7 @@ async def get_data_watch_dialog(dialog_manager: DialogManager, **kwargs):
 
         if result:
             document: dict = list(result)[-1]
-            tutorial = BachataTutorialModel.model_validate(document)
+            tutorial = TutorialModel.model_validate(document)
 
     if tutorial:
         lesson_video = MediaAttachment(ContentType.VIDEO, file_id=MediaId(tutorial.tg_file_id))

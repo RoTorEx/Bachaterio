@@ -2,7 +2,6 @@ from datetime import datetime
 
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
-from bson import ObjectId
 
 from src.bot.enums import UserLevel
 from src.bot.keyboards import buttons_menu
@@ -17,15 +16,12 @@ logger = build_logger(__name__)
 
 async def cmd_start(message: Message) -> None:
     user_id = message.from_user.id
-    document: dict = cursor.users.find_one({"id": user_id})
+    document: dict = cursor.users.find_one({"user_id": user_id})
 
     if not document:
         is_new = True
-        user_obj_id = ObjectId()
-
         user_obj = UserModel(
-            obj_id=user_obj_id,
-            id=user_id,
+            user_id=user_id,
             is_bot=message.from_user.is_bot,
             chat_id=message.chat.id,
             first_name=message.from_user.first_name,
@@ -48,8 +44,12 @@ async def cmd_start(message: Message) -> None:
         logger.info(f"User with `{user_id}` ID has been updated!")
 
     document: dict = cursor.users.find_one_and_update(
-        {"id": user_obj.id}, {"$set": user_obj.model_dump()}, return_document=True, upsert=True
+        {"user_id": user_obj.user_id},
+        {"$set": user_obj.model_dump()},
+        return_document=True,
+        upsert=True,
     )
+
     user_obj = UserModel.model_validate(document)
 
     if message.from_user:
@@ -72,7 +72,7 @@ async def cmd_start(message: Message) -> None:
 
 async def cmd_menu(message: Message, state: FSMContext) -> None:
     user_id = message.from_user.id
-    document: dict = cursor.users.find_one({"id": user_id})
+    document: dict = cursor.users.find_one({"user_id": user_id})
     user_obj = UserModel.model_validate(document)
 
     if document:
@@ -84,9 +84,8 @@ async def cmd_menu(message: Message, state: FSMContext) -> None:
         else:
             await state.clear()
             await message.answer(
-                "Hmm...\nI don't see you in white list.\n\n"
-                + "<i>Contact the admin (@RoTor_Ex) to gain access</i>.",
-                reply_markup=ReplyKeyboardRemove()
+                "Hmm...\nI don't see you in white list.\n\n<i>Contact the admin (@RoTor_Ex) to gain access</i>.",
+                reply_markup=ReplyKeyboardRemove(),
             )
 
     else:

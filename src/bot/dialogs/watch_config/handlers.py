@@ -7,7 +7,6 @@ from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import Button
 
 from src.bot.enums import BachataLessonLevel, BachataLessonStatus, BachataLessonType, SelectOrder
-from src.infrastructure.config_reader import settings
 
 
 async def update_config(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str) -> None:

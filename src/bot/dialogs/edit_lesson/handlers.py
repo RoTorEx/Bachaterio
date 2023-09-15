@@ -7,7 +7,7 @@ from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import Button
 
 from src.bot.enums import BachataLessonLevel, BachataLessonStatus, BachataLessonType, SuggestionStatus
-from src.bot.models import SuggestEditTutorialModel
+from src.bot.models import SuggestionModel
 from src.infrastructure.database import cursor
 from src.infrastructure.logger_builder import build_logger
 
@@ -20,14 +20,14 @@ async def enter_description(message: Message, message_input: MessageInput, manag
     suggestion_id = manager.start_data["suggestion_id"]
 
     payload = {"edit_lesson_description": message.text}
-    cursor.modify_tutorials.update_one({"suggestion_id": suggestion_id}, {"$set": payload})
+    cursor.suggestions.update_one({"suggestion_id": suggestion_id}, {"$set": payload})
 
 
 async def close_subdialog(callback: CallbackQuery, button: Button, manager: DialogManager):
     unique_file_id = manager.start_data["lesson_id"]
     suggestion_id = manager.start_data["suggestion_id"]
 
-    edit_suggestion_document: dict = cursor.modify_tutorials.find_one_and_update(
+    edit_suggestion_document: dict = cursor.suggestions.find_one_and_update(
         {"suggestion_id": suggestion_id},
         {
             "$set": {
@@ -38,7 +38,7 @@ async def close_subdialog(callback: CallbackQuery, button: Button, manager: Dial
         upsert=True,
         return_document=True,
     )
-    edit_suggestion_lesson = SuggestEditTutorialModel.model_validate(edit_suggestion_document)
+    edit_suggestion_lesson = SuggestionModel.model_validate(edit_suggestion_document)
 
     _: dict = cursor.tutorials.find_one_and_update(
         {"tg_unique_file_id": unique_file_id},
@@ -77,7 +77,7 @@ async def edit_lesson(callback: ChatEvent, select: Any, manager: DialogManager, 
     if BachataLessonStatus.has_value(item_id):
         payload.update({"edit_lesson_status": item_id})
 
-    cursor.modify_tutorials.update_one({"suggestion_id": suggestion_id}, {"$set": payload})
+    cursor.suggestions.update_one({"suggestion_id": suggestion_id}, {"$set": payload})
 
 
 async def other_type_handler(message: Message, message_input: MessageInput, manager: DialogManager):

@@ -16,10 +16,10 @@ async def watch_lessons_dialog_process_result(start_data: Data, result: Any, dia
 
 async def update_info(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str) -> None:
     event_user: User = manager.middleware_data["event_from_user"]
-    document = cursor.users.find_one({"id": event_user.id})
-    user = UserModel.model_validate(document)
+    document = cursor.users.find_one({"user_id": event_user.id})
+    user_obj = UserModel.model_validate(document)
 
-    if user.level in [UserLevel.SUPERUSER, UserLevel.ADMIN]:
+    if user_obj.level in [UserLevel.SUPERUSER, UserLevel.ADMIN]:
         await manager.start(
             state=EditSubWatchLessonDialog.edit,
             data={"lesson_id": manager.start_data.get("lesson_id"), "suggestion_id": str(uuid4())},
@@ -30,9 +30,6 @@ async def update_info(callback: ChatEvent, select: Any, manager: DialogManager, 
 
 
 async def increment_counter(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str):
-    print("\nWas called `increment_counter`!\n")
-    print(f"{manager.dialog_data = }")
-
     if item_id == "Next →":
         manager.start_data["skip_stamp"] += 1
 
