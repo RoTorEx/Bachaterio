@@ -25,13 +25,12 @@ RUN apt-get update \
     && apt-get install --no-install-recommends -y \
     curl
 # Install Poetry
-RUN curl -sSL https://install.python-poetry.org | python - --version 1.4.0
+RUN curl -sSL https://install.python-poetry.org | python - --version 1.6.1
 # Copy project requirement files here to ensure they will be cached
 WORKDIR $PYSETUP_PATH
 COPY poetry.lock pyproject.toml ./
 # Install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
 RUN poetry install --without dev --sync
-
 
 
 FROM python-base
