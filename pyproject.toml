@@ -1,0 +1,52 @@
+[tool.poetry]
+name = "Bachaterio"
+version = "1.0.0"
+description = "Telegram bot to store and show bachata lessons"
+authors = ["Aleksey Strelkov <aleks.strel.8v@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+aiogram = "3.0.0"
+redis = "^4.3.4"
+pymongo = "^4.5.0"
+boto3 = "^1.28.43"
+aiogram3-calendar = "^0.1.2b1"
+aiogram-dialog = "^2.0.0"
+pydantic-settings = "^2.0.3"
+
+
+[tool.poetry.dev-dependencies]
+flake8 = "^6.0.0"
+Flake8-pyproject = "^1.1.0"
+isort = "^5.10.1"
+mypy = "^0.981"
+black = {version = "^22.8.0", allow-prereleases = true}
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+line_length = 120
+lines_after_imports = 2
+lines_between_types = 0
+skip = ["versions"]
+
+[tool.black]
+line-length = 120
+exclude = ["versions"]
+
+[tool.flake8]
+max-line-length = 120
+ignore = ["F405", "W503", "W605"]
+exclude = ["versions"]
+
+[tool.mypy]
+show_column_numbers = true  # Will add column offsets to error messages
+show_error_codes = true  # Shows error codes in error messages
+strict = true  # Enables all optional error checking flags
+disallow_subclassing_any = false  # Disable error whenever a class subclasses a value of type Any
+ignore_missing_imports = true  # Suppresses error messages about imports that cannot be resolved
+follow_imports = "silent"  # How mypy follows imported modules
+exclude = ["versions"]
