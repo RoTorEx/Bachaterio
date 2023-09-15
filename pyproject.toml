@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "Bachaterio"
-version = "0.1.0"
-description = ""
+version = "1.0.0"
+description = "Telegram bot to store and show bachata lessons"
 authors = ["Aleksey Strelkov <aleks.strel.8v@gmail.com>"]
 
 [tool.poetry.dependencies]
