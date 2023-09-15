@@ -1,16 +1,11 @@
 from datetime import datetime
 
-from bson.objectid import ObjectId
-from pydantic import Field
-
 from src.bot.enums import UserLevel
 
-from .base import BaseAdminModel, PyObjectId
+from .base import BaseAdminModel
 
 
-class _UserModel(BaseAdminModel):
-    """Mongo object."""
-
+class UserModel(BaseAdminModel):
     user_id: int
     chat_id: int
     is_bot: bool
@@ -19,7 +14,3 @@ class _UserModel(BaseAdminModel):
     username: str | None
     level: UserLevel
     created_at: datetime
-
-
-class UserModel(_UserModel):
-    obj_id: ObjectId = Field(default_factory=PyObjectId, alias="_id")

@@ -9,7 +9,7 @@ from bson import ObjectId
 
 from src.bot.enums import BachataLessonStatus
 from src.bot.keyboards import buttons_menu
-from src.bot.models import BachataTutorialModel
+from src.bot.models import TutorialModel
 from src.bot.states import LoaderState, MenuState
 from src.bot.utils import convert_size
 from src.infrastructure.database import cursor
@@ -58,10 +58,7 @@ async def msg_save_lesson_videos(message: Message, state: FSMContext, bot: Bot) 
         result = cursor.tutorials.find_one({"tg_unique_file_id": tg_unique_file_id})
 
         if not result:
-            tutorial_obj_id = ObjectId()
-
-            tutorial_obj = BachataTutorialModel(
-                obj_id=tutorial_obj_id,
+            tutorial_obj = TutorialModel(
                 tg_unique_file_id=tg_unique_file_id,
                 tg_file_id=tg_file_id,
                 original_file_name=original_file_name,
@@ -79,7 +76,7 @@ async def msg_save_lesson_videos(message: Message, state: FSMContext, bot: Bot) 
 
             new_document: ObjectId = cursor.tutorials.insert_one(tutorial_obj.model_dump())
             document: dict = cursor.tutorials.find_one(new_document.inserted_id)
-            tutorial_obj = BachataTutorialModel.model_validate(document)
+            tutorial_obj = TutorialModel.model_validate(document)
 
             response_message = f"{original_file_name} has been saved!\nInfo: {duration} - {size}."
 

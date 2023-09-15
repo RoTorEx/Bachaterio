@@ -4,10 +4,9 @@ from aiogram.types import ContentType
 from aiogram.types.user import User
 from aiogram_dialog import DialogManager
 from aiogram_dialog.api.entities import MediaAttachment, MediaId
-from bson import ObjectId
 
 from src.bot.enums import SuggestionStatus
-from src.bot.models import BachataTutorialModel, SuggestEditTutorialModel
+from src.bot.models import SuggestionModel, TutorialModel
 from src.infrastructure.database import cursor
 
 
@@ -17,7 +16,7 @@ async def get_data_edit_dialog(dialog_manager: DialogManager, **kwargs):
 
     document: dict = cursor.tutorials.find_one({"tg_unique_file_id": unique_file_id})
 
-    tutorial = BachataTutorialModel.model_validate(document)
+    tutorial = TutorialModel.model_validate(document)
     lesson_video = MediaAttachment(ContentType.VIDEO, file_id=MediaId(tutorial.tg_file_id))
 
     edit_document = cursor.suggestions.find_one({"suggestion_id": suggestion_id})
@@ -25,10 +24,7 @@ async def get_data_edit_dialog(dialog_manager: DialogManager, **kwargs):
     if not edit_document:
 
         event_user: User = dialog_manager.middleware_data["event_from_user"]
-        suggest_obj_id = ObjectId()
-
-        suggest_obj = SuggestEditTutorialModel(
-            obj_id=suggest_obj_id,
+        suggest_obj = SuggestionModel(
             suggestion_id=suggestion_id,
             tg_unique_file_id=tutorial.tg_unique_file_id,
             edit_lesson_description=tutorial.lesson_description,
@@ -46,7 +42,7 @@ async def get_data_edit_dialog(dialog_manager: DialogManager, **kwargs):
             {"suggestion_id": str(suggestion_id)}, {"$set": suggest_obj.model_dump()}, upsert=True, return_document=True
         )
 
-    edit_tutorial = SuggestEditTutorialModel.model_validate(edit_document)
+    edit_tutorial = SuggestionModel.model_validate(edit_document)
 
     edit_lesson_dialog_response = {
         # Static

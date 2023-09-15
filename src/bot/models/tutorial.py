@@ -1,16 +1,11 @@
 from datetime import datetime
 
-from bson.objectid import ObjectId
-from pydantic import Field
-
 from src.bot.enums import BachataLessonLevel, BachataLessonStatus, BachataLessonType
 
-from .base import BaseAdminModel, PyObjectId
+from .base import BaseAdminModel
 
 
-class _BachataTutorialModel(BaseAdminModel):
-    """Mongo object."""
-
+class TutorialModel(BaseAdminModel):
     tg_unique_file_id: str
     tg_file_id: str
     original_file_name: str
@@ -24,7 +19,3 @@ class _BachataTutorialModel(BaseAdminModel):
     last_updated_at: datetime | None
     suggestion_id: str | None
     created_at: datetime
-
-
-class BachataTutorialModel(_BachataTutorialModel):
-    obj_id: ObjectId = Field(default_factory=PyObjectId, alias="_id")

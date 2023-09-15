@@ -7,7 +7,7 @@ from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import Button
 
 from src.bot.enums import BachataLessonLevel, BachataLessonStatus, BachataLessonType, SuggestionStatus
-from src.bot.models import SuggestEditTutorialModel
+from src.bot.models import SuggestionModel
 from src.infrastructure.database import cursor
 from src.infrastructure.logger_builder import build_logger
 
@@ -38,7 +38,7 @@ async def close_subdialog(callback: CallbackQuery, button: Button, manager: Dial
         upsert=True,
         return_document=True,
     )
-    edit_suggestion_lesson = SuggestEditTutorialModel.model_validate(edit_suggestion_document)
+    edit_suggestion_lesson = SuggestionModel.model_validate(edit_suggestion_document)
 
     _: dict = cursor.tutorials.find_one_and_update(
         {"tg_unique_file_id": unique_file_id},
