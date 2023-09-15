@@ -20,7 +20,7 @@ async def get_data_edit_dialog(dialog_manager: DialogManager, **kwargs):
     tutorial = BachataTutorialModel.model_validate(document)
     lesson_video = MediaAttachment(ContentType.VIDEO, file_id=MediaId(tutorial.tg_file_id))
 
-    edit_document = cursor.modify_tutorials.find_one({"suggestion_id": suggestion_id})
+    edit_document = cursor.suggestions.find_one({"suggestion_id": suggestion_id})
 
     if not edit_document:
 
@@ -42,7 +42,7 @@ async def get_data_edit_dialog(dialog_manager: DialogManager, **kwargs):
             created_at=datetime.utcnow(),
         )
 
-        edit_document = cursor.modify_tutorials.find_one_and_update(
+        edit_document = cursor.suggestions.find_one_and_update(
             {"suggestion_id": str(suggestion_id)}, {"$set": suggest_obj.model_dump()}, upsert=True, return_document=True
         )
 

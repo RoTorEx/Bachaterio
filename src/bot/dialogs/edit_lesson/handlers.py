@@ -20,14 +20,14 @@ async def enter_description(message: Message, message_input: MessageInput, manag
     suggestion_id = manager.start_data["suggestion_id"]
 
     payload = {"edit_lesson_description": message.text}
-    cursor.modify_tutorials.update_one({"suggestion_id": suggestion_id}, {"$set": payload})
+    cursor.suggestions.update_one({"suggestion_id": suggestion_id}, {"$set": payload})
 
 
 async def close_subdialog(callback: CallbackQuery, button: Button, manager: DialogManager):
     unique_file_id = manager.start_data["lesson_id"]
     suggestion_id = manager.start_data["suggestion_id"]
 
-    edit_suggestion_document: dict = cursor.modify_tutorials.find_one_and_update(
+    edit_suggestion_document: dict = cursor.suggestions.find_one_and_update(
         {"suggestion_id": suggestion_id},
         {
             "$set": {
@@ -77,7 +77,7 @@ async def edit_lesson(callback: ChatEvent, select: Any, manager: DialogManager, 
     if BachataLessonStatus.has_value(item_id):
         payload.update({"edit_lesson_status": item_id})
 
-    cursor.modify_tutorials.update_one({"suggestion_id": suggestion_id}, {"$set": payload})
+    cursor.suggestions.update_one({"suggestion_id": suggestion_id}, {"$set": payload})
 
 
 async def other_type_handler(message: Message, message_input: MessageInput, manager: DialogManager):
