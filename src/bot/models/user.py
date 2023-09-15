@@ -11,7 +11,7 @@ from .base import BaseAdminModel, PyObjectId
 class _UserModel(BaseAdminModel):
     """Mongo object."""
 
-    id: int
+    user_id: int
     chat_id: int
     is_bot: bool
     first_name: str | None
