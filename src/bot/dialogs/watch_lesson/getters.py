@@ -43,12 +43,12 @@ async def get_data_watch_dialog(dialog_manager: DialogManager, **kwargs):
 
     else:
         sorting_order = -1 if sorting_order == SelectOrder.NEWEST else 1
-        result = (
+        result = list(
             cursor.tutorials.find(query).sort([("lesson_date", sorting_order), ("_id", 1)]).skip(skip_stamp).limit(1)
         )
 
         if result:
-            document: dict = list(result)[-1]
+            document: dict = result[-1]
             tutorial = TutorialModel.model_validate(document)
 
     if tutorial:
