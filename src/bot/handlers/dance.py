@@ -26,6 +26,7 @@ async def msg_select_dance(message: Message, state: FSMContext, bot: Bot, dialog
     await message.answer(
         "Let's make some bachata!",
         reply_markup=choosen_dance_module(),
+        disable_notification=True,
     )
 
 
@@ -37,6 +38,7 @@ async def msg_setup_select_config(message: Message, state: FSMContext, bot: Bot,
         + "A lot of vidoes are in `<b>disable</b>` status right now, so able to play with config!\n\n"
         + "<b>Dance</b> in chat using your <i>keybutton</i> when you're done setting up the coffig to see what I have to you!",  # noqa
         reply_markup=finished_filter_setup(),
+        disable_notification=True,
     )
 
     await dialog_manager.start(
@@ -82,6 +84,7 @@ async def msg_start_show_lessons(message: Message, state: FSMContext, bot: Bot, 
     await message.answer(
         f"I found `{count}` tutorials on your configuration",
         reply_markup=ReplyKeyboardRemove(),
+        disable_notification=True,
     )
 
     await dialog_manager.start(
@@ -104,6 +107,7 @@ async def msg_save_lessons(message: Message, state: FSMContext, dialog_manager: 
     await message.answer(
         "Before load your videos select lesson (record) date.",
         reply_markup=ReplyKeyboardRemove(),
+        disable_notification=True,
     )
 
     await dialog_manager.start(
@@ -114,7 +118,7 @@ async def msg_save_lessons(message: Message, state: FSMContext, dialog_manager: 
 
 async def msg_finish_load(message: Message, state: FSMContext) -> None:
     await state.set_state(MenuState.start_dance)
-    await message.answer("👌", reply_markup=choosen_dance_module())
+    await message.answer("👌", reply_markup=choosen_dance_module(), disable_notification=True,)
 
 
 async def msg_edit_date(message: Message, state: FSMContext, dialog_manager: DialogManager) -> None:
@@ -165,6 +169,6 @@ async def msg_save_lesson_videos(message: Message, state: FSMContext, bot: Bot) 
         else:
             response_message = "I alredy have this video."
 
-        await message.answer(response_message)
+        await message.answer(response_message, disable_notification=True,)
     else:
-        await message.answer(r"Unsupported type ¯\_(ツ)_/¯. Send video.")
+        await message.answer(r"Unsupported type ¯\_(ツ)_/¯. Send video.", disable_notification=True,)

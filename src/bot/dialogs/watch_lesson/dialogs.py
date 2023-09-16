@@ -1,8 +1,8 @@
 from aiogram import html
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.kbd import Select, Button
+from aiogram_dialog.widgets.kbd import Button, Select
 from aiogram_dialog.widgets.media import DynamicMedia
-from aiogram_dialog.widgets.text import Format, Multi, Const
+from aiogram_dialog.widgets.text import Const, Format, Multi
 
 from src.bot.states import WatchLessonDialog
 

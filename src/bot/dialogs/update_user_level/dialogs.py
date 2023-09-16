@@ -7,7 +7,7 @@ from src.bot.enums import UserLevel
 from src.bot.states import SetLevelSubManageUserDialog
 
 from .getters import get_data_update_user_level
-from .handlers import save_level, set_level, revert_level
+from .handlers import revert_level, save_level, set_level
 
 
 update_user_level_sub_dialog = Dialog(

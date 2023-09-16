@@ -1,6 +1,7 @@
 from typing import Any
 
 from aiogram_dialog import ChatEvent, DialogManager
+
 from src.infrastructure.database import cursor
 
 
