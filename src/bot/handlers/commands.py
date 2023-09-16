@@ -73,9 +73,10 @@ async def cmd_start(message: Message) -> None:
 async def cmd_menu(message: Message, state: FSMContext) -> None:
     user_id = message.from_user.id
     document: dict = cursor.users.find_one({"user_id": user_id})
-    user_obj = UserModel.model_validate(document)
 
     if document:
+        user_obj = UserModel.model_validate(document)
+
         if user_obj.level in [UserLevel.SUPERUSER, UserLevel.ADMIN, UserLevel.MODERATOR, UserLevel.MEMBER]:
             await state.clear()
             await state.set_state(MenuState.start_menu)
