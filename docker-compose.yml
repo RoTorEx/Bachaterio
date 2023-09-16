@@ -8,7 +8,7 @@ services:
       REDIS_HOST: ${REDIS__HOST}
       VOLUMES_DIR: ~/{VOLUMES_DIR}
     ports:
-      - 6379:6379
+      - ${REDIS__PORT}:${REDIS__PORT}
     volumes:
       - ~/${VOLUMES_DIR}/redis-config:/usr/local/etc/redis/redis.conf
       - ~/${VOLUMES_DIR}/redis-data:/data
@@ -33,12 +33,11 @@ services:
     env_file:
       - .env
     environment:
+      MONGO_DATA_DIR: /data/db
       MONGO_INITDB_ROOT_USERNAME: ${MONGO__USERNAME}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO__PASSWORD}
     ports:
       - ${MONGO__PORT}:${MONGO__PORT}
     volumes:
-      - mongo_data_container:/mongo_data/bachaterio
+      - ~/${VOLUMES_DIR}/mongo-data/:/data/db
 
-volumes:
-  mongo_data_container:
