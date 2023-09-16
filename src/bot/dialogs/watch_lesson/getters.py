@@ -11,6 +11,7 @@ from src.infrastructure.database import cursor
 
 async def get_data_watch_dialog(dialog_manager: DialogManager, **kwargs):
     query = {}  # Update with incoming values
+    watch_lessons_dialog_response = {}
 
     skip_stamp = dialog_manager.start_data["skip_stamp"]
     sorting_order = dialog_manager.start_data["sorting_order"]
@@ -40,6 +41,7 @@ async def get_data_watch_dialog(dialog_manager: DialogManager, **kwargs):
             unique_id = r.choice(unique_ids)
             document = cursor.tutorials.find_one({"tg_unique_file_id": unique_id})
             tutorial = TutorialModel.model_validate(document)
+            watch_lessons_dialog_response.update({"random": True})
 
     else:
         sorting_order = -1 if sorting_order == SelectOrder.NEWEST else 1
@@ -50,11 +52,12 @@ async def get_data_watch_dialog(dialog_manager: DialogManager, **kwargs):
         if result:
             document: dict = result[-1]
             tutorial = TutorialModel.model_validate(document)
+            watch_lessons_dialog_response.update({"order": True})
 
     if tutorial:
         lesson_video = MediaAttachment(ContentType.VIDEO, file_id=MediaId(tutorial.tg_file_id))
 
-        watch_lessons_dialog_response = {
+        watch_lessons_dialog_response.update({
             "show_lesson": True,
             "lesson_video": lesson_video,
             "lesson_id": tutorial.tg_unique_file_id,
@@ -63,7 +66,7 @@ async def get_data_watch_dialog(dialog_manager: DialogManager, **kwargs):
             "lesson_level": tutorial.lesson_level.value if tutorial.lesson_level else "null",
             "lesson_status": tutorial.lesson_status.value,
             "lesson_description": tutorial.lesson_description,
-        }
+        })
         dialog_manager.start_data["lesson_id"] = tutorial.tg_unique_file_id
 
     else:

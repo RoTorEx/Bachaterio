@@ -55,19 +55,45 @@ async def msg_start_show_lessons(message: Message, state: FSMContext, bot: Bot, 
     state_data = await state.get_data()
     previous_dialog_result = state_data.get("setup_watch_response")
 
+    query = {}  # Update with incoming values
+
+    sorting_order = previous_dialog_result.get("lesson_order")
+    lesson_type = previous_dialog_result.get("lesson_type")
+    lesson_level = previous_dialog_result.get("lesson_level")
+    lesson_status = previous_dialog_result.get("lesson_status")
+
+    if lesson_type in [BachataLessonType.COMBINATION, BachataLessonType.DANCE, BachataLessonType.ELEMENT]:
+        query.update({"lesson_type": lesson_type})
+
+    if lesson_level in [
+        BachataLessonLevel.NOVICE,
+        BachataLessonLevel.BEGINNER,
+        BachataLessonLevel.INTERMEDIATE,
+        BachataLessonLevel.ADVANCED,
+        BachataLessonLevel.EXPERT,
+    ]:
+        query.update({"lesson_level": lesson_level})
+
+    query.update({"lesson_status": lesson_status})
+
+    print(f"{query = }")
+    count = cursor.tutorials.count_documents(query)
+
     await message.answer(
-        "Watching mode activated.\nEnter `/menu` to get back.\n",
+        f"I found `{count}` tutorials on your configuration",
         reply_markup=ReplyKeyboardRemove(),
     )
+
     await dialog_manager.start(
         WatchLessonDialog.watch,
         mode=StartMode.RESET_STACK,
         data={
             "skip_stamp": 0,
-            "sorting_order": previous_dialog_result.get("lesson_order"),
-            "lesson_type": previous_dialog_result.get("lesson_type"),
-            "lesson_level": previous_dialog_result.get("lesson_level"),
-            "lesson_status": previous_dialog_result.get("lesson_status"),
+            "sorting_order": sorting_order,
+            "lesson_type": lesson_type,
+            "lesson_level": lesson_level,
+            "lesson_status": lesson_status,
+            "count": count
         },
     )
 

@@ -27,12 +27,12 @@ async def msg_select_manage(message: Message, state: FSMContext, bot: Bot, dialo
 # ===
 # CRM
 async def msg_manage_users(message: Message, state: FSMContext, dialog_manager: DialogManager) -> None:
+    count = cursor.users.count_documents({})
+
     await message.answer(
-        "Here is users list",
+        f"I have `{count}` registered users.",
         reply_markup=ReplyKeyboardRemove(),
     )
-
-    count = cursor.users.count_documents({})
 
     await dialog_manager.start(
         ManageUserDialog.manage_users,
