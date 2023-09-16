@@ -19,7 +19,7 @@ async def update_info(callback: ChatEvent, select: Any, manager: DialogManager, 
     document = cursor.users.find_one({"user_id": event_user.id})
     user_obj = UserModel.model_validate(document)
 
-    if user_obj.level in [UserLevel.SUPERUSER, UserLevel.ADMIN]:
+    if user_obj.level in [UserLevel.SUPERUSER, UserLevel.ADMIN, UserLevel.MODERATOR]:
         await manager.start(
             state=EditSubWatchLessonDialog.edit,
             data={"lesson_id": manager.start_data.get("lesson_id"), "suggestion_id": str(uuid4())},

@@ -3,7 +3,7 @@ from datetime import date
 from aiogram.types import CallbackQuery
 from aiogram_dialog import DialogManager
 
-from src.bot.keyboards import finish_lesson_loading
+from src.bot.keyboards import finished_lesson_loading
 from src.bot.states import LoaderState
 
 
@@ -13,7 +13,7 @@ async def on_date_selected(callback: CallbackQuery, widget, manager: DialogManag
     await callback.message.answer(
         text=f"You can now submit videos, they will all be saved with a lesson date of <b>{selected_date}</b>."
         + "\nPress `Done ✔️` when you're finished or `Edit ✏️` to correct the date.",
-        reply_markup=finish_lesson_loading(),
+        reply_markup=finished_lesson_loading(),
     )
 
     state = manager.middleware_data["state"]

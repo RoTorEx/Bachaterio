@@ -75,12 +75,16 @@ async def cmd_menu(message: Message, state: FSMContext) -> None:
     document: dict = cursor.users.find_one({"user_id": user_id})
 
     if document:
+        is_superuser = False
         user_obj = UserModel.model_validate(document)
+
+        if user_obj.level in [UserLevel.SUPERUSER]:
+            is_superuser = True
 
         if user_obj.level in [UserLevel.SUPERUSER, UserLevel.ADMIN, UserLevel.MODERATOR, UserLevel.MEMBER]:
             await state.clear()
-            await state.set_state(MenuState.start_menu)
-            await message.answer("Let's make some bachata!", reply_markup=buttons_menu())
+            await state.set_state(MenuState.init)
+            await message.answer("Make your choise please ^^", reply_markup=buttons_menu(is_superuser=is_superuser))
 
         else:
             await state.clear()

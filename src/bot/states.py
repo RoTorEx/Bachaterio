@@ -2,8 +2,10 @@ from aiogram.fsm.state import State, StatesGroup
 
 
 class MenuState(StatesGroup):
-    start_menu = State()
-    end_menu = State()
+    init = State()
+    get_info = State()
+    start_dance = State()
+    start_manage = State()
 
 
 class LoaderState(StatesGroup):
@@ -26,3 +28,11 @@ class WatchLessonDialog(StatesGroup):
 
 class EditSubWatchLessonDialog(StatesGroup):
     edit = State()
+
+
+class ManageUserDialog(StatesGroup):
+    manage_users = State()
+
+
+class SetLevelSubManageUserDialog(StatesGroup):
+    set_level = State()
