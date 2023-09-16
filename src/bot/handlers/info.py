@@ -1,4 +1,4 @@
-from aiogram import Bot
+from aiogram import Bot, html
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message
 from aiogram_dialog import DialogManager
@@ -19,5 +19,9 @@ async def msg_select_info(message: Message, state: FSMContext, bot: Bot, dialog_
     user_obj = UserModel.model_validate(document)
 
     await message.answer(
-        f"Your ID: <b>{user_id}</b>\n" + f"Your level: <b>{user_obj.level.value}</b>",
+        "My version: <i>1.0.0</i>\n\n"
+        + f"{html.quote('=== < ~ > ===')}\n\n"
+        + f"Your ID: <b>{user_id}</b>\n"
+        + f"Your level: <b>{user_obj.level.value}</b>",
+        disable_notification=True,
     )

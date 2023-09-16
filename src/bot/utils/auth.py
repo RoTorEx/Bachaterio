@@ -20,6 +20,6 @@ def superuser_check(f):
             return await f(*args, **kwargs)
 
         else:
-            await message.answer("You have not access to use `Manage` module.")
+            await message.answer("You have not access to use `Manage` module.", disable_notification=True,)
 
     return decorator

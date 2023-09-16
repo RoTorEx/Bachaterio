@@ -30,12 +30,18 @@ async def update_info(callback: ChatEvent, select: Any, manager: DialogManager, 
 
 
 async def increment_counter(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str):
+    count = manager.start_data["count"]
+
     if item_id == "Next →":
-        manager.start_data["skip_stamp"] += 1
+        if manager.start_data["skip_stamp"] < count - 1:
+            manager.start_data["skip_stamp"] += 1
+
+        else:
+            await callback.answer(text="It's the last item on the right!", show_alert=True)
 
     if item_id == "← Previos":
         if manager.start_data["skip_stamp"] > 0:
             manager.start_data["skip_stamp"] -= 1
 
         else:
-            await callback.answer(text="This is the final element!", show_alert=True)
+            await callback.answer(text="It's the last item on the left!", show_alert=True)

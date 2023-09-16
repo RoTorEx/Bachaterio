@@ -1,8 +1,8 @@
 from aiogram import html
 from aiogram_dialog import Dialog, Window
-from aiogram_dialog.widgets.kbd import Select
+from aiogram_dialog.widgets.kbd import Button, Select
 from aiogram_dialog.widgets.media import DynamicMedia
-from aiogram_dialog.widgets.text import Format, Multi
+from aiogram_dialog.widgets.text import Const, Format, Multi
 
 from src.bot.states import WatchLessonDialog
 
@@ -43,7 +43,12 @@ watch_lessons_dialog = Dialog(
             item_id_getter=lambda x: x,
             id="w_count_stamp",
             on_click=increment_counter,
-            when="show_lesson",
+            when="order",
+        ),
+        Button(
+            Const("🎲"),
+            id="w_random",
+            when="random",
         ),
         state=WatchLessonDialog.watch,
         getter=get_data_watch_dialog,

@@ -1,6 +1,6 @@
 from aiogram import Router
 
-from src.bot.dialogs import choose_date, edit_lesson, manage_user, watch_config, watch_lesson, update_user_level
+from src.bot.dialogs import choose_date, edit_lesson, manage_user, update_user_level, watch_config, watch_lesson
 
 
 def load_dialogs() -> Router:

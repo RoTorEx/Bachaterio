@@ -14,6 +14,7 @@ async def on_date_selected(callback: CallbackQuery, widget, manager: DialogManag
         text=f"You can now submit videos, they will all be saved with a lesson date of <b>{selected_date}</b>."
         + "\nPress `Done ✔️` when you're finished or `Edit ✏️` to correct the date.",
         reply_markup=finished_lesson_loading(),
+        disable_notification=True,
     )
 
     state = manager.middleware_data["state"]
