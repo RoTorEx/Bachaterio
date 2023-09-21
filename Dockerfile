@@ -30,7 +30,7 @@ RUN curl -sSL https://install.python-poetry.org | python - --version 1.6.1
 WORKDIR $PYSETUP_PATH
 COPY poetry.lock pyproject.toml ./
 # Install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
-RUN poetry install --without dev --sync
+RUN poetry install --with app --without dev --sync
 
 
 FROM python-base
