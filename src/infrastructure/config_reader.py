@@ -1,4 +1,19 @@
+import tomllib
+
+from pydantic import Field, BaseModel
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+with open("pyproject.toml", "rb") as f:
+    data = tomllib.load(f)
+
+
+class App(BaseModel):
+    """App info."""
+
+    name: str = Field(data["tool"]["poetry"]["name"])
+    version: str = Field(data["tool"]["poetry"]["version"])
+    description: str = Field(data["tool"]["poetry"]["description"])
 
 
 class TgBot(BaseSettings):
@@ -38,6 +53,7 @@ class Settings(BaseSettings):
         extra="ignore",
     )
 
+    app: App = App()  # ?Load defoilt values
     tg_bot: TgBot
     redis: Redis
     mongo: Mongo
