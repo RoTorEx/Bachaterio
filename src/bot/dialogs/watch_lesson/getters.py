@@ -57,16 +57,18 @@ async def get_data_watch_dialog(dialog_manager: DialogManager, **kwargs):
     if tutorial:
         lesson_video = MediaAttachment(ContentType.VIDEO, file_id=MediaId(tutorial.tg_file_id))
 
-        watch_lessons_dialog_response.update({
-            "show_lesson": True,
-            "lesson_video": lesson_video,
-            "lesson_id": tutorial.tg_unique_file_id,
-            "lesson_date": tutorial.lesson_date.strftime("%d/%m/%Y"),
-            "lesson_type": tutorial.lesson_type.value if tutorial.lesson_type else "null",
-            "lesson_level": tutorial.lesson_level.value if tutorial.lesson_level else "null",
-            "lesson_status": tutorial.lesson_status.value,
-            "lesson_description": tutorial.lesson_description,
-        })
+        watch_lessons_dialog_response.update(
+            {
+                "show_lesson": True,
+                "lesson_video": lesson_video,
+                "lesson_id": tutorial.tg_unique_file_id,
+                "lesson_date": tutorial.lesson_date.strftime("%d/%m/%Y"),
+                "lesson_type": tutorial.lesson_type.value if tutorial.lesson_type else "null",
+                "lesson_level": tutorial.lesson_level.value if tutorial.lesson_level else "null",
+                "lesson_status": tutorial.lesson_status.value,
+                "lesson_description": tutorial.lesson_description,
+            }
+        )
         dialog_manager.start_data["lesson_id"] = tutorial.tg_unique_file_id
 
     else:

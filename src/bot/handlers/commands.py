@@ -61,17 +61,10 @@ async def cmd_start(message: Message) -> None:
         else:
             say_hello = "Hello again! ^^"
 
-        await message.answer(
-            say_hello,
-            reply_markup=ReplyKeyboardRemove(),
-            disable_notification=True,
-        )
+        await message.answer(say_hello, reply_markup=ReplyKeyboardRemove())
 
     else:
-        await message.answer(
-            "Hello %username%.",
-            disable_notification=True,
-        )
+        await message.answer("Hello %username%.")
 
 
 async def cmd_menu(message: Message, state: FSMContext) -> None:
@@ -91,7 +84,6 @@ async def cmd_menu(message: Message, state: FSMContext) -> None:
             await message.answer(
                 "Make your choise please ^^",
                 reply_markup=buttons_menu(is_superuser=is_superuser),
-                disable_notification=True,
             )
 
         else:
@@ -99,11 +91,7 @@ async def cmd_menu(message: Message, state: FSMContext) -> None:
             await message.answer(
                 "Hmm...\nI don't see you in white list.\n\n<i>Contact the admin (@RoTor_Ex) to gain access</i>.",
                 reply_markup=ReplyKeyboardRemove(),
-                disable_notification=True,
             )
 
     else:
-        await message.answer(
-            "Who are you? Firstly run `/start` so that I can indentify you.",
-            disable_notification=True,
-        )
+        await message.answer("Who are you? Firstly run `/start` so that I can indentify you.")

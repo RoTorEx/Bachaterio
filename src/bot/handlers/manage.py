@@ -21,7 +21,6 @@ async def msg_select_manage(message: Message, state: FSMContext, bot: Bot, dialo
     await message.answer(
         "Go ahead.",
         reply_markup=choosen_manage_module(),
-        disable_notification=True,
     )
 
 
@@ -33,16 +32,12 @@ async def msg_manage_users(message: Message, state: FSMContext, dialog_manager: 
     await message.answer(
         f"I have `{count}` registered users.",
         reply_markup=ReplyKeyboardRemove(),
-        disable_notification=True,
     )
 
     await dialog_manager.start(
         ManageUserDialog.manage_users,
         mode=StartMode.RESET_STACK,
-        data={
-            "skip_stamp": 0,
-            "count": count
-        },
+        data={"skip_stamp": 0, "count": count},
     )
 
 
@@ -51,5 +46,4 @@ async def msg_manage_users(message: Message, state: FSMContext, dialog_manager: 
 async def msg_manage_suggestions(message: Message, state: FSMContext, dialog_manager: DialogManager) -> None:
     await message.answer(
         "Not implemented yet :'(",
-        disable_notification=True,
     )

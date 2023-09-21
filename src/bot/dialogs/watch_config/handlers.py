@@ -25,7 +25,7 @@ async def update_config(callback: ChatEvent, select: Any, manager: DialogManager
 
 
 async def other_type_handler(message: Message, message_input: MessageInput, manager: DialogManager):
-    await message.answer("Only `🕺` or `💃` are expected.", disable_notification=True,)
+    await message.answer("Only `🕺` or `💃` are expected.")
 
 
 async def time_to_dance_handler(callback: CallbackQuery, button: Button, manager: DialogManager) -> None:

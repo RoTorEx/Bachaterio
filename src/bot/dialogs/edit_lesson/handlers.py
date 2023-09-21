@@ -81,4 +81,4 @@ async def edit_lesson(callback: ChatEvent, select: Any, manager: DialogManager, 
 
 
 async def other_type_handler(message: Message, message_input: MessageInput, manager: DialogManager):
-    await message.answer("Say hello!", disable_notification=True,)
+    await message.answer("Say hello!")

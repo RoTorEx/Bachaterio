@@ -19,7 +19,7 @@ update_user_level_sub_dialog = Dialog(
             + "Level: <b>{level}</b>\n"
             + "Created: <b>{created_at}</b>\n\n"
             + f"{html.quote('=== < ~ > ===')}\n\n"
-            + "Update level on <b>{edit_level}</b>. Are you sure?\n",
+            + "Update level on <b>{edit_level}</b>. Are you sure?\n"
         ),
         Select(
             Format("{item}"),

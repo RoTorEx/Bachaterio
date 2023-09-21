@@ -25,10 +25,7 @@ watch_lessons_dialog = Dialog(
             ),
             Format("I'm sorry, but I couldn't find any lessons on the given parameters :'(", when="say_sorry"),
         ),
-        DynamicMedia(
-            "lesson_video",
-            when="show_lesson",
-        ),
+        DynamicMedia("lesson_video", when="show_lesson"),
         Select(
             Format("{item}"),
             items=["Edit lesson ✏️"],
@@ -45,11 +42,7 @@ watch_lessons_dialog = Dialog(
             on_click=increment_counter,
             when="order",
         ),
-        Button(
-            Const("🎲"),
-            id="w_random",
-            when="random",
-        ),
+        Button(Const("🎲"), id="w_random", when="random"),
         state=WatchLessonDialog.watch,
         getter=get_data_watch_dialog,
     ),
