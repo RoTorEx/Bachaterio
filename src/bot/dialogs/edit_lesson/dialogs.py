@@ -33,9 +33,7 @@ edit_lesson_sub_dialog = Dialog(
             + f"{html.quote('=== < ~ > ===')}\n\n"
             + "<i>Edit tip: to update `description` write message in the chat</i>."
         ),
-        DynamicMedia(
-            "lesson_video",
-        ),
+        DynamicMedia("lesson_video"),
         Select(
             Format("{item}"),
             items=[e.value for e in BachataLessonType if e != BachataLessonType.ALL],
