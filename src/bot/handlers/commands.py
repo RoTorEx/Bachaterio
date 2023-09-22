@@ -1,12 +1,14 @@
 from datetime import datetime
 
+from aiogram import Bot
 from aiogram.fsm.context import FSMContext
 from aiogram.types import Message, ReplyKeyboardRemove
+from aiogram_dialog import DialogManager, StartMode
 
 from src.bot.enums import UserLevel
-from src.bot.keyboards import buttons_menu
 from src.bot.models import UserModel
-from src.bot.states import MenuState
+from src.bot.states import MenuDialog
+from src.infrastructure.config_reader import settings
 from src.infrastructure.database import cursor
 from src.infrastructure.logger_builder import build_logger
 
@@ -14,7 +16,7 @@ from src.infrastructure.logger_builder import build_logger
 logger = build_logger(__name__)
 
 
-async def cmd_start(message: Message) -> None:
+async def cmd_start(message: Message, bot: Bot) -> None:
     user_id = message.from_user.id
     document: dict = cursor.users.find_one({"user_id": user_id})
 
@@ -58,40 +60,40 @@ async def cmd_start(message: Message) -> None:
                 f"Hi there <i>{user_obj.first_name}</i>.\nSee the available commands by pressing the blue button."
             )
 
+            first_name = user_obj.first_name if user_obj.first_name else ""
+            last_name = user_obj.last_name if user_obj.last_name else ""
+            username = f"@{user_obj.username}" if user_obj.username else ""
+
+            full_name = first_name + last_name
+
+            await bot.send_message(
+                chat_id=settings.tg_bot.info_chat,
+                text=(
+                    f"New user <i>{full_name}</i> with ID <i>{user_obj.user_id}</i> aka."
+                    + f" <i>{username}</i> has registered."
+                ),
+            )
+
         else:
-            say_hello = "Hello again! ^^"
+            say_hello = "Hello again! ^^\nTap blue button to see all available commands."
 
         await message.answer(say_hello, reply_markup=ReplyKeyboardRemove())
 
     else:
-        await message.answer("Hello %username%.")
+        await message.answer("Hello %username%.", reply_markup=ReplyKeyboardRemove())
 
 
-async def cmd_menu(message: Message, state: FSMContext) -> None:
-    user_id = message.from_user.id
-    document: dict = cursor.users.find_one({"user_id": user_id})
+async def cmd_menu(message: Message, state: FSMContext, dialog_manager: DialogManager) -> None:
+    await message.answer(text="Ah shit, here we go again.", reply_markup=ReplyKeyboardRemove())
 
-    if document:
-        is_superuser = False
-        user_obj = UserModel.model_validate(document)
+    await dialog_manager.start(
+        MenuDialog.init,
+        mode=StartMode.RESET_STACK,
+    )
 
-        if user_obj.level in [UserLevel.SUPERUSER]:
-            is_superuser = True
 
-        if user_obj.level in [UserLevel.SUPERUSER, UserLevel.ADMIN, UserLevel.MODERATOR, UserLevel.MEMBER]:
-            await state.clear()
-            await state.set_state(MenuState.init)
-            await message.answer(
-                "Make your choise please ^^",
-                reply_markup=buttons_menu(is_superuser=is_superuser),
-            )
-
-        else:
-            await state.clear()
-            await message.answer(
-                "Hmm...\nI don't see you in white list.\n\n<i>Contact the admin (@RoTor_Ex) to gain access</i>.",
-                reply_markup=ReplyKeyboardRemove(),
-            )
-
-    else:
-        await message.answer("Who are you? Firstly run `/start` so that I can indentify you.")
+async def cmd_help(message: Message, state: FSMContext) -> None:
+    await message.answer(
+        "Hmm...\n\n<i>Write to `@RoTor_Ex` if you have any questions</i>.",
+        reply_markup=ReplyKeyboardRemove(),
+    )

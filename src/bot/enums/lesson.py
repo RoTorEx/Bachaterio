@@ -1,6 +1,8 @@
 from enum import Enum
 
 
+# ToDo: move `all` in filters
+
 class BachataLessonType(str, Enum):
     ALL = "all"
     ELEMENT = "element"

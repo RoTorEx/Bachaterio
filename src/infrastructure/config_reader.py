@@ -21,6 +21,7 @@ class TgBot(BaseSettings):
 
     token: str
     log_chat: int
+    info_chat: int
     port: int
     use_redis: bool
 
