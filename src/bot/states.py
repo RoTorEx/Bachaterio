@@ -34,5 +34,6 @@ class SuperintendDialog(StatesGroup):
     # Users
     manage_users = State()
     update_user_level = State()
+    send_message = State()
     # Suggestions
     manage_suggestions = State()

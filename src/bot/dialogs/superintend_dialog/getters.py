@@ -54,6 +54,7 @@ async def get_data_manage_user(dialog_manager: DialogManager, **kwargs):
             }
         )
         dialog_manager.dialog_data["user_id"] = user_obj.user_id
+        dialog_manager.dialog_data["chat_id"] = user_obj.chat_id
         dialog_manager.dialog_data["edit_level"] = user_obj.level.value
 
     else:
@@ -70,7 +71,7 @@ async def get_data_update_user_level(dialog_manager: DialogManager, **kwargs):
 
     user_obj = UserModel.model_validate(document)
 
-    update_user_level_resposen_dialog = {
+    response = {
         "user_id": user_obj.user_id,
         "first_name": user_obj.first_name,
         "last_name": user_obj.last_name,
@@ -80,4 +81,4 @@ async def get_data_update_user_level(dialog_manager: DialogManager, **kwargs):
         "edit_level": edit_level,
     }
 
-    return update_user_level_resposen_dialog
+    return response
