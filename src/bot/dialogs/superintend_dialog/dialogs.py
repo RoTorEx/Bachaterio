@@ -1,5 +1,7 @@
 from aiogram import html
+from aiogram.types import ContentType
 from aiogram_dialog import Dialog, Window
+from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import Button, Row, Select, SwitchTo
 from aiogram_dialog.widgets.text import Const, Format, Multi
 
@@ -11,10 +13,11 @@ from .handlers import (
     increment_counter,
     manage_suggestions,
     manage_users,
+    other_type_handler,
     return_to_menu,
     save_level,
-    send_message,
     set_level,
+    text_message_handler,
     try_update_level,
 )
 
@@ -74,10 +77,11 @@ superintend_dialog = Dialog(
             on_click=increment_counter,
             when="show_user",
         ),
-        Button(
+        SwitchTo(
             Const("Message ✉️"),
-            id="a_message",
-            on_click=send_message,
+            id="continue_send_message",
+            # on_click=send_message,
+            state=SuperintendDialog.send_message,
             when="show_user",
         ),
         SwitchTo(
@@ -87,6 +91,17 @@ superintend_dialog = Dialog(
         ),
         state=SuperintendDialog.manage_users,
         getter=get_data_manage_user,
+    ),
+    Window(
+        Const("Write message and I'll send it!"),
+        SwitchTo(
+            Const("Back ↩"),
+            id="switch_to_users",
+            state=SuperintendDialog.manage_users,
+        ),
+        MessageInput(text_message_handler, content_types=[ContentType.TEXT]),
+        MessageInput(other_type_handler),
+        state=SuperintendDialog.send_message,
     ),
     Window(
         Format(

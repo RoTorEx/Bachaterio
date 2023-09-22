@@ -4,10 +4,10 @@ from aiogram import Router
 from aiogram.filters import Command, ExceptionTypeFilter
 from aiogram_dialog.api.exceptions import UnknownIntent, UnknownState
 
-from src.bot.views.commands import MENU_COMMAND, START_COMMAND, HELP_COMMAND
+from src.bot.views.commands import HELP_COMMAND, MENU_COMMAND, START_COMMAND
 from src.infrastructure.config_reader import settings
 
-from .commands import cmd_menu, cmd_start, cmd_help
+from .commands import cmd_help, cmd_menu, cmd_start
 from .errors import handle, on_unknown_intent, on_unknown_state
 
 

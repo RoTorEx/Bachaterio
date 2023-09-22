@@ -1,7 +1,11 @@
 from typing import Any
 
+from aiogram import Bot
+from aiogram.types import Message
 from aiogram_dialog import ChatEvent, DialogManager
+from aiogram_dialog.widgets.input import MessageInput
 
+from src.bot.enums import UserLevel
 from src.infrastructure.database import cursor
 
 
@@ -17,7 +21,7 @@ async def return_back(callback: ChatEvent, select: Any, manager: DialogManager) 
 
 # =====
 # USERS
-async def manage_users(callback: ChatEvent, select: Any, manager: DialogManager):
+async def manage_users(callback: ChatEvent, select: Any, manager: DialogManager) -> None:
     count = cursor.users.count_documents({})
 
     manager.dialog_data["skip_stamp"] = 0
@@ -26,8 +30,18 @@ async def manage_users(callback: ChatEvent, select: Any, manager: DialogManager)
     await callback.answer(text=f"I have `{count}` registered users.")
 
 
-async def send_message(callback: ChatEvent, select: Any, manager: DialogManager):
-    await callback.answer(text="Some message has gone.", show_alert=True)
+async def text_message_handler(message: Message, message_input: MessageInput, manager: DialogManager) -> None:
+    chat_id = manager.dialog_data["chat_id"]
+
+    bot: Bot = manager.middleware_data["bot"]
+
+    # ToDo: === return call back here that message has been sent ===
+    await message.answer(text=f"Following message: <i>{message.text}</i> has been sent to user.")
+    await bot.send_message(chat_id=chat_id, text=message.text)
+
+
+async def other_type_handler(message: Message, message_input: MessageInput, manager: DialogManager):
+    await message.answer(r"Unsupported type ¯\_(ツ)_/¯")
 
 
 async def try_update_level(callback: ChatEvent, select: Any, manager: DialogManager) -> None:
@@ -58,9 +72,30 @@ async def set_level(callback: ChatEvent, select: Any, manager: DialogManager, it
 
 async def save_level(callback: ChatEvent, select: Any, manager: DialogManager):
     level = manager.dialog_data["edit_level"]
+    chat_id = manager.dialog_data["chat_id"]
     user_id = manager.dialog_data["user_id"]
 
     cursor.users.update_one({"user_id": user_id}, {"$set": {"level": level}})
+
+    bot: Bot = manager.middleware_data["bot"]
+
+    if level == UserLevel.STRANGER:
+        tip = "Sorry, you no longer have permission to view the lessons :'("
+
+    elif level == UserLevel.MEMBER:
+        tip = "Hey, you can look at the lessons now!"
+
+    elif level == UserLevel.MODERATOR:
+        tip = "You can edit and upload lessons!"
+
+    elif level == UserLevel.ADMIN:
+        tip = "Now you are able to manage!"
+
+    else:
+        tip = "You've got <b>GOD</b> mode!"
+
+    await callback.answer(text="User has been notified of the level changes!", show_alert=True)
+    await bot.send_message(chat_id=chat_id, text=tip)
 
 
 # ===========
