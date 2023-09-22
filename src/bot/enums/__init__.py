@@ -1,6 +1,6 @@
 from .answer import BotAnswer
 from .lesson import BachataLessonLevel, BachataLessonStatus, BachataLessonType, SuggestionStatus
-from .practice import SelectOrder
+from .filters import SelectOrder
 from .user import UserLevel
 
 

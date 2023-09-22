@@ -12,13 +12,13 @@ logger = logging.getLogger(__name__)
 
 async def on_unknown_intent(event: ErrorEvent, dialog_manager: DialogManager) -> None:
     """Example of handling UnknownIntent Error and starting new dialog."""
-    logging.error("Restarting dialog: %s", event.exception)
+    logger.error("Restarting dialog: %s", event.exception)
     await dialog_manager.reset_stack()
 
 
 async def on_unknown_state(event: ErrorEvent, dialog_manager: DialogManager) -> None:
     """Example of handling UnknownState Error and starting new dialog."""
-    logging.error("Restarting dialog: %s", event.exception)
+    logger.error("Restarting dialog: %s", event.exception)
     await dialog_manager.reset_stack()
 
 
@@ -34,8 +34,8 @@ async def handle(error: ErrorEvent, log_chat_id: int, bot: Bot):
         return
 
     await bot.send_message(
-        log_chat_id,
-        f"Получено исключение {hd.quote(str(error.exception))}\n"
-        f"во время обработки апдейта "
-        f"{hd.quote(json.dumps(error.update.dict(exclude_none=True), default=str)[:3500])}\n",
+        chat_id=log_chat_id,
+        text=f"Got exception {hd.quote(str(error.exception))}\n"
+        f"during processing "
+        f"{hd.quote(json.dumps(error.update.model_dump(exclude_none=True), default=str)[:3500])}\n",
     )
