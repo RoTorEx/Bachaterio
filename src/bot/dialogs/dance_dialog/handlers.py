@@ -93,19 +93,21 @@ async def setup_config(message: Message, message_input: MessageInput, manager: D
     manager.dialog_data["lesson_status"] = BachataLessonStatus.ENABLE.value
 
 
-async def update_config(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str) -> None:
-    if SelectOrder.has_value(item_id):
-        manager.dialog_data["lesson_order"] = item_id
+async def change_order(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str):
+    manager.dialog_data["lesson_order"] = item_id
 
-    if BachataLessonType.has_value(item_id):
-        manager.dialog_data["lesson_type"] = item_id
 
-    if BachataLessonLevel.has_value(item_id):
-        manager.dialog_data["lesson_level"] = item_id
+async def change_type(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str):
+    manager.dialog_data["lesson_type"] = item_id
 
-    if BachataLessonStatus.has_value(item_id):
-        # ToDo: lock this function for nonmanager users (use reauest to MongoDB)
-        manager.dialog_data["lesson_status"] = item_id
+
+async def change_level(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str):
+    manager.dialog_data["lesson_level"] = item_id
+
+
+# ToDo: lock this function for nonmanager users (use reauest to MongoDB)
+async def change_status(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str):
+    manager.dialog_data["lesson_status"] = item_id
 
 
 async def save_lesson_filter(callback: ChatEvent, select: Any, manager: DialogManager) -> None:
