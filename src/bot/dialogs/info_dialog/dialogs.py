@@ -12,12 +12,14 @@ from .handlers import return_to_menu
 info_dialog = Dialog(
     Window(
         Format(
-            "My name: <i>{my_name}</i>\n"
-            + "My version: <i>{my_version}</i>\n"
-            + "My description: <i>{my_description}</i>\n\n"
+            "• Your ID: <b>{your_id}</b>\n"
+            + "• Your level: <b>{your_level}</b>\n"
+            + "• Your opportunities: <b>{your_opportunities}</b>\n\n"
             + f"{html.quote('=== < ~ > ===')}\n\n"
-            + "Your ID: <b>{your_id}</b>\n"
-            + "Your level: <b>{your_level}</b>",
+            + "• My name: <i>{my_name}</i>\n"
+            + "• My version: <i>{my_version}</i>\n"
+            + "• My description: <i>{my_description}</i>\n"
+            + "• My instructors: <i>@RadekBachata</i> & <i>Kinga Bachata</i>"
         ),
         Button(
             Const("Back to menu ↩"),

@@ -12,7 +12,7 @@ from .handlers import start_dance_dialog, start_info_dialog, start_rules_dialog,
 
 menu_dialog = Dialog(
     Window(
-        Const(r"Welcome to menu %username%!"),
+        Const(r"Welcome to menu <b><i>%username%</i></b>"),
         Button(
             Const("Info ℹ️"),
             id="d_info",
