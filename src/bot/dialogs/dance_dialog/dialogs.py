@@ -1,3 +1,5 @@
+import random as r
+
 from aiogram import html
 from aiogram.types import ContentType
 from aiogram_dialog import Dialog, Window
@@ -11,6 +13,10 @@ from src.bot.states import DanceDialog
 
 from .getters import get_dance_data, get_edit_lesson_data, get_lesson_data, get_lesson_filter_data, get_load_lesson_data
 from .handlers import (
+    change_level,
+    change_order,
+    change_status,
+    change_type,
     edit_lesson,
     enter_description,
     increment_counter,
@@ -21,7 +27,6 @@ from .handlers import (
     save_lesson_filter,
     save_suggestion,
     setup_config,
-    update_config,
     update_info,
     video_handler,
 )
@@ -92,31 +97,31 @@ dance_dialog = Dialog(
             items=[e.value for e in SelectOrder],
             item_id_getter=lambda x: x,
             id="update_lesson_order",
-            on_click=update_config,
+            on_click=change_order,
         ),
         Select(
             Format("{item}"),
             items=[e.value for e in BachataLessonType],
             item_id_getter=lambda x: x,
             id="update_lesson_type",
-            on_click=update_config,
+            on_click=change_type,
         ),
         Select(
             Format("{item}"),
             items=[e.value for e in BachataLessonLevel],
             item_id_getter=lambda x: x,
             id="update_lesson_level",
-            on_click=update_config,
+            on_click=change_level,
         ),
         Select(
             Format("{item}"),
             items=[e.value for e in BachataLessonStatus],
             item_id_getter=lambda x: x,
             id="update_lesson_status",
-            on_click=update_config,
+            on_click=change_status,
         ),
         SwitchTo(
-            Const("Let's dance!"),
+            Const(f"Let's dance {r.choice(['🕺', '💃'])}"),
             id="back_to_section",
             on_click=save_lesson_filter,
             state=DanceDialog.watch_lesson,
@@ -149,7 +154,7 @@ dance_dialog = Dialog(
                 "I'm sorry, but I couldn't find any lessons on the given parameters :'(",
                 when="say_sorry",
             ),
-            sep="\n",
+            sep="\n\n",
         ),
         DynamicMedia(
             "lesson_video",
