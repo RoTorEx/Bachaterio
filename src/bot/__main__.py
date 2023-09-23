@@ -2,7 +2,7 @@ import asyncio
 from typing import Union
 
 from aiogram import Bot, Dispatcher
-from aiogram.fsm.storage.memory import MemoryStorage
+from aiogram.fsm.storage.memory import MemoryStorage, SimpleEventIsolation
 from aiogram.fsm.storage.redis import RedisStorage
 from aiogram_dialog import setup_dialogs
 
@@ -27,7 +27,7 @@ async def main() -> None:
 
     # ?Creating bot and its dispatcher
     bot = Bot(token=settings.tg_bot.token, parse_mode="HTML")
-    dp = Dispatcher(storage=storage)
+    dp = Dispatcher(storage=storage, events_isolation=SimpleEventIsolation())
 
     # ?Register all components and setup dialogs. Dialog loader must goes last!
     dp.include_router(load_handlers())
