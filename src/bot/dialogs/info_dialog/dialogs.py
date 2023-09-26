@@ -19,7 +19,7 @@ info_dialog = Dialog(
             + "• My name: <i>{my_name}</i>\n"
             + "• My version: <i>{my_version}</i>\n"
             + "• My description: <i>{my_description}</i>\n"
-            + "• My instructors: <i>@RadekBachata</i> & <i>Kinga Bachata</i>"
+            + "• My instructors: <i>@RadekBachata</i> & <i>@KingaBachata</i>"
         ),
         Button(
             Const("Back to menu ↩"),
