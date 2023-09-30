@@ -1,19 +1,22 @@
 from .answer import BotAnswer
-from .filters import SelectOrder
-from .lesson import BachataLessonLevel, BachataLessonStatus, BachataLessonType, SuggestionStatus
+from .filters import SelectLessonLevelFilter, SelectLessonOrderFilter, SelectLessonStatusFilter, SelectLessonTypeFilter
+from .lesson import LessonLevel, LessonStatus, LessonType, SuggestionStatus
 from .user import UserLevel
 
 
 __all__ = [
     # Answer
     "BotAnswer",
+    # Filters
+    "SelectLessonLevelFilter",
+    "SelectLessonOrderFilter",
+    "SelectLessonStatusFilter",
+    "SelectLessonTypeFilter",
     # Lesson
-    "BachataLessonLevel",
-    "BachataLessonType",
-    "BachataLessonStatus",
+    "LessonLevel",
+    "LessonType",
+    "LessonStatus",
     "SuggestionStatus",
-    # Practice
-    "SelectOrder",
     # User
     "UserLevel",
 ]

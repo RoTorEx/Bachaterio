@@ -1,11 +1,7 @@
 from enum import Enum
 
 
-# ToDo: move `all` in filters
-
-
-class BachataLessonType(str, Enum):
-    ALL = "all"
+class LessonType(str, Enum):
     ELEMENT = "element"
     COMBINATION = "combination"
     DANCE = "dance"
@@ -15,7 +11,7 @@ class BachataLessonType(str, Enum):
         return value in cls._value2member_map_
 
 
-class BachataLessonStatus(str, Enum):
+class LessonStatus(str, Enum):
     DISABLE = "disable"
     ENABLE = "enable"
 
@@ -24,8 +20,7 @@ class BachataLessonStatus(str, Enum):
         return value in cls._value2member_map_
 
 
-class BachataLessonLevel(str, Enum):
-    ALL = "all"
+class LessonLevel(str, Enum):
     NOVICE = 1
     BEGINNER = 2
     INTERMEDIATE = 3
