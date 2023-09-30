@@ -43,7 +43,7 @@ async def video_handler(message: Message, message_input: MessageInput, manager: 
 
     tg_file_id = message.video.file_id
     tg_unique_file_id = message.video.file_unique_id
-    original_file_name = message.video.file_name
+    original_file_name = message.video.file_name if message.video.file_name else "Not defined name"
     duration = time.strftime("%M:%S", time.gmtime(message.video.duration))
     size = convert_size(message.video.file_size)
 
@@ -70,7 +70,7 @@ async def video_handler(message: Message, message_input: MessageInput, manager: 
         document: dict = cursor.tutorials.find_one(new_document.inserted_id)
         tutorial_obj = TutorialModel.model_validate(document)
 
-        response_message = f"{original_file_name} has been saved!\nInfo: {duration} - {size}."
+        response_message = f"<b>{original_file_name}</b> has been saved!\nInfo: {duration} - {size}"
 
         logger.info(f"Loaded new video with `{tutorial_obj.tg_unique_file_id}` ID.")
 
