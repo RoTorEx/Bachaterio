@@ -5,7 +5,7 @@ from aiogram.types import ContentType, User
 from aiogram_dialog import DialogManager
 from aiogram_dialog.api.entities import MediaAttachment, MediaId
 
-from src.bot.enums import BachataLessonLevel, BachataLessonType, SelectOrder, SuggestionStatus, UserLevel
+from src.bot.enums import LessonLevel, LessonType, SelectLessonOrderFilter, SuggestionStatus, UserLevel
 from src.bot.models import SuggestionModel, TutorialModel, UserModel
 from src.infrastructure.database import cursor
 
@@ -60,29 +60,30 @@ async def get_lesson_data(dialog_manager: DialogManager, **kwargs):
     response = {}
 
     skip_stamp = dialog_manager.dialog_data["skip_stamp"]
-    count = dialog_manager.dialog_data["count"]
     sorting_order = dialog_manager.dialog_data["sorting_order"]
     lesson_type = dialog_manager.dialog_data["lesson_type"]
     lesson_level = dialog_manager.dialog_data["lesson_level"]
     lesson_status = dialog_manager.dialog_data["lesson_status"]
 
-    if lesson_type in [BachataLessonType.COMBINATION, BachataLessonType.DANCE, BachataLessonType.ELEMENT]:
+    if lesson_type in [LessonType.COMBINATION, LessonType.DANCE, LessonType.ELEMENT]:
         query.update({"lesson_type": lesson_type})
 
     if lesson_level in [
-        BachataLessonLevel.NOVICE,
-        BachataLessonLevel.BEGINNER,
-        BachataLessonLevel.INTERMEDIATE,
-        BachataLessonLevel.ADVANCED,
-        BachataLessonLevel.EXPERT,
+        LessonLevel.NOVICE,
+        LessonLevel.BEGINNER,
+        LessonLevel.INTERMEDIATE,
+        LessonLevel.ADVANCED,
+        LessonLevel.EXPERT,
     ]:
         query.update({"lesson_level": lesson_level})
 
     query.update({"lesson_status": lesson_status})
 
     tutorial = None
+    count = cursor.tutorials.count_documents(query)
+    dialog_manager.dialog_data["count"] = count
 
-    if sorting_order == SelectOrder.RANDOM:
+    if sorting_order == SelectLessonOrderFilter.RANDOM:
         unique_ids = cursor.tutorials.find(query).distinct("tg_unique_file_id")
         if unique_ids:
             unique_id = r.choice(unique_ids)
@@ -91,10 +92,18 @@ async def get_lesson_data(dialog_manager: DialogManager, **kwargs):
             response.update({"random": True})
 
     else:
-        sorting_order = -1 if sorting_order == SelectOrder.NEWEST else 1
-        result = list(
-            cursor.tutorials.find(query).sort([("lesson_date", sorting_order), ("_id", 1)]).skip(skip_stamp).limit(1)
-        )
+        # Define default values
+        sort_arg = "lesson_date"
+        sort_value = -1
+
+        if sorting_order in [SelectLessonOrderFilter.NEWEST, SelectLessonOrderFilter.OLDEST]:
+            sort_value = -1 if sorting_order == SelectLessonOrderFilter.NEWEST else 1
+
+        elif sorting_order in [SelectLessonOrderFilter.LAST_LOADED, SelectLessonOrderFilter.FIRST_LOADED]:
+            sort_value = -1 if sorting_order == SelectLessonOrderFilter.LAST_LOADED else 1
+            sort_arg = "created_at"
+
+        result = list(cursor.tutorials.find(query).sort([(sort_arg, sort_value), ("_id", 1)]).skip(skip_stamp).limit(1))
 
         if result:
             document: dict = result[-1]

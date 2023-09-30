@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.bot.enums import BachataLessonLevel, BachataLessonStatus, BachataLessonType
+from src.bot.enums import LessonLevel, LessonStatus, LessonType
 
 from .base import BaseAdminModel
 
@@ -11,9 +11,9 @@ class TutorialModel(BaseAdminModel):
     original_file_name: str
     lesson_description: str
     lesson_date: datetime
-    lesson_type: BachataLessonType | None
-    lesson_level: BachataLessonLevel | None
-    lesson_status: BachataLessonStatus
+    lesson_type: LessonType | None
+    lesson_level: LessonLevel | None
+    lesson_status: LessonStatus
     loaded_by: int
     is_active: bool
     last_updated_at: datetime | None

@@ -9,8 +9,18 @@ from aiogram_dialog.widgets.input import MessageInput
 from aiogram_dialog.widgets.kbd import Button
 from bson import ObjectId
 
-from src.bot.enums import BachataLessonLevel, BachataLessonStatus, BachataLessonType, SelectOrder, SuggestionStatus
+from src.bot.enums import (
+    LessonLevel,
+    LessonStatus,
+    LessonType,
+    SelectLessonLevelFilter,
+    SelectLessonOrderFilter,
+    SelectLessonStatusFilter,
+    SelectLessonTypeFilter,
+    SuggestionStatus,
+)
 from src.bot.models import SuggestionModel, TutorialModel
+from src.bot.states import DanceDialog
 from src.bot.utils import convert_size
 from src.infrastructure.database import cursor
 from src.infrastructure.logger_builder import build_logger
@@ -58,7 +68,7 @@ async def video_handler(message: Message, message_input: MessageInput, manager: 
             lesson_type=None,
             lesson_date=lesson_date,
             lesson_level=None,
-            lesson_status=BachataLessonStatus.DISABLE,
+            lesson_status=LessonStatus.DISABLE,
             loaded_by=message.from_user.id,
             is_active=True,
             last_updated_at=None,
@@ -87,27 +97,31 @@ async def other_type_handler(message: Message, message_input: MessageInput, mana
 # ========
 # PRACTICE
 async def setup_config(message: Message, message_input: MessageInput, manager: DialogManager):
-    manager.dialog_data["lesson_order"] = SelectOrder.RANDOM.value
-    manager.dialog_data["lesson_type"] = BachataLessonType.ALL.value
-    manager.dialog_data["lesson_level"] = BachataLessonLevel.ALL.value
-    manager.dialog_data["lesson_status"] = BachataLessonStatus.ENABLE.value
+    manager.dialog_data["lesson_order"] = SelectLessonOrderFilter.NEWEST.value
+    manager.dialog_data["lesson_type"] = SelectLessonTypeFilter.ALL.value
+    manager.dialog_data["lesson_level"] = SelectLessonLevelFilter.ALL.value
+    manager.dialog_data["lesson_status"] = SelectLessonStatusFilter.ENABLE.value
 
 
 async def change_order(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str):
     manager.dialog_data["lesson_order"] = item_id
+    await manager.switch_to(DanceDialog.create_lesson_filter)
 
 
 async def change_type(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str):
     manager.dialog_data["lesson_type"] = item_id
+    await manager.switch_to(DanceDialog.create_lesson_filter)
 
 
 async def change_level(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str):
     manager.dialog_data["lesson_level"] = item_id
+    await manager.switch_to(DanceDialog.create_lesson_filter)
 
 
 # ToDo: lock this function for nonmanager users (use reauest to MongoDB)
 async def change_status(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str):
     manager.dialog_data["lesson_status"] = item_id
+    await manager.switch_to(DanceDialog.create_lesson_filter)
 
 
 async def save_lesson_filter(callback: ChatEvent, select: Any, manager: DialogManager) -> None:
@@ -118,15 +132,15 @@ async def save_lesson_filter(callback: ChatEvent, select: Any, manager: DialogMa
     lesson_level = manager.dialog_data["lesson_level"]
     lesson_status = manager.dialog_data["lesson_status"]
 
-    if lesson_type in [BachataLessonType.COMBINATION, BachataLessonType.DANCE, BachataLessonType.ELEMENT]:
+    if lesson_type in [LessonType.COMBINATION, LessonType.DANCE, LessonType.ELEMENT]:
         query.update({"lesson_type": lesson_type})
 
     if lesson_level in [
-        BachataLessonLevel.NOVICE,
-        BachataLessonLevel.BEGINNER,
-        BachataLessonLevel.INTERMEDIATE,
-        BachataLessonLevel.ADVANCED,
-        BachataLessonLevel.EXPERT,
+        LessonLevel.NOVICE,
+        LessonLevel.BEGINNER,
+        LessonLevel.INTERMEDIATE,
+        LessonLevel.ADVANCED,
+        LessonLevel.EXPERT,
     ]:
         query.update({"lesson_level": lesson_level})
 
@@ -135,7 +149,7 @@ async def save_lesson_filter(callback: ChatEvent, select: Any, manager: DialogMa
     count = cursor.tutorials.count_documents(query)
 
     manager.dialog_data["skip_stamp"] = 0
-    manager.dialog_data["count"] = count
+    # manager.dialog_data["count"] = count
     manager.dialog_data["sorting_order"] = sorting_order
 
     await callback.answer(text=f"I found `{count}` tutorials on your configuration")
@@ -214,13 +228,15 @@ async def edit_lesson(callback: ChatEvent, select: Any, manager: DialogManager, 
     _ = manager.dialog_data["lesson_id"]
     suggestion_id = manager.dialog_data["suggestion_id"]
 
-    if BachataLessonType.has_value(item_id):
+    if LessonType.has_value(item_id):
         payload.update({"edit_lesson_type": item_id})
 
-    if BachataLessonLevel.has_value(item_id):
+    if LessonLevel.has_value(item_id):
         payload.update({"edit_lesson_level": item_id})
 
-    if BachataLessonStatus.has_value(item_id):
+    if LessonStatus.has_value(item_id):
         payload.update({"edit_lesson_status": item_id})
 
     cursor.suggestions.update_one({"suggestion_id": suggestion_id}, {"$set": payload})
+
+    await manager.switch_to(DanceDialog.edit_lesson)

@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.bot.enums import BachataLessonLevel, BachataLessonStatus, BachataLessonType, SuggestionStatus
+from src.bot.enums import LessonLevel, LessonStatus, LessonType, SuggestionStatus
 
 from .base import BaseAdminModel
 
@@ -10,9 +10,9 @@ class SuggestionModel(BaseAdminModel):
     tg_unique_file_id: str
     edit_lesson_description: str
     edit_lesson_date: datetime
-    edit_lesson_type: BachataLessonType | None
-    edit_lesson_level: BachataLessonLevel | None
-    edit_lesson_status: BachataLessonStatus
+    edit_lesson_type: LessonType | None
+    edit_lesson_level: LessonLevel | None
+    edit_lesson_status: LessonStatus
     suggestion_status: SuggestionStatus
     suggested_by: int
     is_active: bool

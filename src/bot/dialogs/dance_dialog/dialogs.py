@@ -1,14 +1,20 @@
-import random as r
-
 from aiogram import html
 from aiogram.types import ContentType
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.input import MessageInput
-from aiogram_dialog.widgets.kbd import Button, Calendar, Select, SwitchTo
+from aiogram_dialog.widgets.kbd import Button, Calendar, Row, Select, SwitchTo
 from aiogram_dialog.widgets.media import DynamicMedia
 from aiogram_dialog.widgets.text import Const, Format, Multi
 
-from src.bot.enums import BachataLessonLevel, BachataLessonStatus, BachataLessonType, SelectOrder
+from src.bot.enums import (
+    LessonLevel,
+    LessonStatus,
+    LessonType,
+    SelectLessonLevelFilter,
+    SelectLessonOrderFilter,
+    SelectLessonStatusFilter,
+    SelectLessonTypeFilter,
+)
 from src.bot.states import DanceDialog
 
 from .getters import get_dance_data, get_edit_lesson_data, get_lesson_data, get_lesson_filter_data, get_load_lesson_data
@@ -86,42 +92,39 @@ dance_dialog = Dialog(
     # PRACTICE
     Window(
         Format(
-            "This is the current config for lesson selection:\n"
-            + "1. Sort order: <b>{lesson_order}</b>\n"
-            + "2. Lesson type: <b>{lesson_type}</b>\n"
-            + "3. Lesson level: <b>{lesson_level}</b>\n"
-            + "4. Lesson status: <b>{lesson_status}</b>\n"
+            "Here is default searching config:\n"
+            + "🔗 Sort order: <b>{lesson_order}</b>\n"
+            + "📷 Lesson type: <b>{lesson_type}</b>\n"
+            + "📈 Lesson level: <b>{lesson_level}</b>\n"
+            + "📌 Lesson status: <b>{lesson_status}</b>\n\n"
+            + "<i>Tip: Use buttons below to adjust the current config and start dancing to continue</i>."
         ),
-        Select(
-            Format("{item}"),
-            items=[e.value for e in SelectOrder],
-            item_id_getter=lambda x: x,
-            id="update_lesson_order",
-            on_click=change_order,
+        Row(
+            SwitchTo(
+                Const("Order 🔗"),
+                id="switch_to_filter_order",
+                state=DanceDialog.filter_order,
+            ),
+            SwitchTo(
+                Const("Type 📷"),
+                id="switch_to_filter_type",
+                state=DanceDialog.filter_type,
+            ),
         ),
-        Select(
-            Format("{item}"),
-            items=[e.value for e in BachataLessonType],
-            item_id_getter=lambda x: x,
-            id="update_lesson_type",
-            on_click=change_type,
-        ),
-        Select(
-            Format("{item}"),
-            items=[e.value for e in BachataLessonLevel],
-            item_id_getter=lambda x: x,
-            id="update_lesson_level",
-            on_click=change_level,
-        ),
-        Select(
-            Format("{item}"),
-            items=[e.value for e in BachataLessonStatus],
-            item_id_getter=lambda x: x,
-            id="update_lesson_status",
-            on_click=change_status,
+        Row(
+            SwitchTo(
+                Const("Level 📈"),
+                id="switch_to_filter_level",
+                state=DanceDialog.filter_level,
+            ),
+            SwitchTo(
+                Const("Status 📌"),
+                id="switch_to_filter_status",
+                state=DanceDialog.filter_status,
+            ),
         ),
         SwitchTo(
-            Const(f"Let's dance {r.choice(['🕺', '💃'])}"),
+            Const("Let's dance 🪩"),
             id="back_to_section",
             on_click=save_lesson_filter,
             state=DanceDialog.watch_lesson,
@@ -134,16 +137,108 @@ dance_dialog = Dialog(
         state=DanceDialog.create_lesson_filter,
         getter=get_lesson_filter_data,
     ),
+    # # Filter lesson selection
+    Window(
+        Const("Chose lesson order 🔗"),
+        Select(
+            Format("{item}"),
+            items=[SelectLessonOrderFilter.NEWEST.value, SelectLessonOrderFilter.OLDEST.value],
+            item_id_getter=lambda x: x,
+            id="config_lesson_order",
+            on_click=change_order,
+        ),
+        Select(
+            Format("{item}"),
+            items=[SelectLessonOrderFilter.RANDOM.value],
+            item_id_getter=lambda x: x,
+            id="config_lesson_order",
+            on_click=change_order,
+        ),
+        Select(
+            Format("{item}"),
+            items=[SelectLessonOrderFilter.LAST_LOADED.value, SelectLessonOrderFilter.FIRST_LOADED.value],
+            item_id_getter=lambda x: x,
+            id="config_lesson_order",
+            on_click=change_order,
+        ),
+        state=DanceDialog.filter_order,
+    ),
+    Window(
+        Const("Chose lesson type 📷"),
+        Select(
+            Format("{item}"),
+            items=[SelectLessonTypeFilter.ALL.value],
+            item_id_getter=lambda x: x,
+            id="config_lesson_type",
+            on_click=change_type,
+        ),
+        Select(
+            Format("{item}"),
+            items=[
+                SelectLessonTypeFilter.ELEMENT.value,
+                SelectLessonTypeFilter.COMBINATION.value,
+                SelectLessonTypeFilter.DANCE.value,
+            ],
+            item_id_getter=lambda x: x,
+            id="config_lesson_type",
+            on_click=change_type,
+        ),
+        state=DanceDialog.filter_type,
+    ),
+    Window(
+        Const("Chose lesson level 📈"),
+        Select(
+            Format("{item}"),
+            items=[SelectLessonLevelFilter.ALL.value],
+            item_id_getter=lambda x: x,
+            id="config_lesson_level",
+            on_click=change_level,
+        ),
+        Select(
+            Format("{item}"),
+            items=[
+                SelectLessonLevelFilter.NOVICE.value,
+                SelectLessonLevelFilter.BEGINNER.value,
+                SelectLessonLevelFilter.INTERMEDIATE.value,
+            ],
+            item_id_getter=lambda x: x,
+            id="config_lesson_level",
+            on_click=change_level,
+        ),
+        Select(
+            Format("{item}"),
+            items=[
+                SelectLessonLevelFilter.ADVANCED.value,
+                SelectLessonLevelFilter.EXPERT.value,
+            ],
+            item_id_getter=lambda x: x,
+            id="config_lesson_level",
+            on_click=change_level,
+        ),
+        state=DanceDialog.filter_level,
+    ),
+    Window(
+        Const("Chose lesson status 📌"),
+        Select(
+            Format("{item}"),
+            items=[e.value for e in SelectLessonStatusFilter],
+            item_id_getter=lambda x: x,
+            id="config_lesson_status",
+            on_click=change_status,
+        ),
+        state=DanceDialog.filter_status,
+    ),
+    # # Show lessons
     Window(
         Multi(
             Format(
                 "Id: <i>{lesson_id}</i>\n\n"
                 + f"{html.quote('=== < ~ > ===')}\n\n"
-                + "Date: <b>{lesson_date}</b>\n"
-                + "Type: <b>{lesson_type}</b>\n"
-                + "Level: <b>{lesson_level}</b>\n"
-                + "Status: <b>{lesson_status}</b>\n"
-                + "Description: <b>{lesson_description}</b>",
+                + "🗓 Date: <b>{lesson_date}</b>\n"
+                + "📷 Type: <b>{lesson_type}</b>\n"
+                + "📈 Level: <b>{lesson_level}</b>\n"
+                + "📌 Status: <b>{lesson_status}</b>\n"
+                + "📝 Description: <b>{lesson_description}</b>",
                 when="show_lesson",
             ),
             Format(
@@ -192,42 +287,39 @@ dance_dialog = Dialog(
         Format(
             "Id: <i>{lesson_id}</i>\n\n"
             + f"{html.quote('=== < ~ > ===')}\n\n"
-            + "Saved data:\n"
-            + "Date: <b>{lesson_date}</b>\n"
-            + "Type: <b>{lesson_type}</b>\n"
-            + "Level: <b>{lesson_level}</b>\n"
-            + "Status: <b>{lesson_status}</b>\n"
-            + "Description: <b>{lesson_description}</b>\n\n"
+            + "Current lesson info:\n"
+            + "🗓 Date: <i>{lesson_date}</i>\n"
+            + "📷 Type: <i>{lesson_type}</i>\n"
+            + "📈 Level: <i>{lesson_level}</i>\n"
+            + "📌 Status: <i>{lesson_status}</i>\n"
+            + "📝 Description: <i>{lesson_description}</i>\n\n"
             + f"{html.quote('=== < ~ > ===')}\n\n"
             + "Suggested changes:\n"
-            + "Type: <b>{edit_lesson_type}</b>\n"
-            + "Level: <b>{edit_lesson_level}</b>\n"
-            + "Status: <b>{edit_lesson_status}</b>\n"
-            + "Description: <b>{edit_lesson_description}</b>\n\n"
+            + "🗓 Date: <i>Changes are locked</i>\n"
+            + "📷 Type: <b>{edit_lesson_type}</b>\n"
+            + "📈 Level: <b>{edit_lesson_level}</b>\n"
+            + "📌 Status: <b>{edit_lesson_status}</b>\n"
+            + "📝 Description: <b>{edit_lesson_description}</b>\n\n"
             + f"{html.quote('=== < ~ > ===')}\n\n"
             + "<i>Edit tip: to update `description` write message in the chat</i>."
         ),
         DynamicMedia("lesson_video"),
-        Select(
-            Format("{item}"),
-            items=[e.value for e in BachataLessonType if e != BachataLessonType.ALL],
-            item_id_getter=lambda x: x,
-            id="edit_lesson_type",
-            on_click=edit_lesson,
-        ),
-        Select(
-            Format("{item}"),
-            items=[e.value for e in BachataLessonLevel if e != BachataLessonLevel.ALL],
-            item_id_getter=lambda x: x,
-            id="edit_lesson_level",
-            on_click=edit_lesson,
-        ),
-        Select(
-            Format("{item}"),
-            items=[e.value for e in BachataLessonStatus],
-            item_id_getter=lambda x: x,
-            id="edit_lesson_status",
-            on_click=edit_lesson,
+        Row(
+            SwitchTo(
+                Const("Type 📷"),
+                id="switch_to_filter_type",
+                state=DanceDialog.edit_lesson_type,
+            ),
+            SwitchTo(
+                Const("Level 📈"),
+                id="switch_to_filter_level",
+                state=DanceDialog.edit_lesson_level,
+            ),
+            SwitchTo(
+                Const("Status 📌"),
+                id="switch_to_filter_status",
+                state=DanceDialog.edit_lesson_status,
+            ),
         ),
         SwitchTo(
             Const("Save ✔️"),
@@ -244,5 +336,56 @@ dance_dialog = Dialog(
         MessageInput(other_type_handler),
         state=DanceDialog.edit_lesson,
         getter=get_edit_lesson_data,
+    ),
+    Window(
+        Const("Lesson type to update 📷"),
+        Select(
+            Format("{item}"),
+            items=[
+                LessonType.ELEMENT.value,
+                LessonType.COMBINATION.value,
+                LessonType.DANCE.value,
+            ],
+            item_id_getter=lambda x: x,
+            id="edit_lesson_type",
+            on_click=edit_lesson,
+        ),
+        state=DanceDialog.edit_lesson_type,
+    ),
+    Window(
+        Const("Lesson level to update 📈"),
+        Select(
+            Format("{item}"),
+            items=[
+                LessonLevel.NOVICE.value,
+                LessonLevel.BEGINNER.value,
+                LessonLevel.INTERMEDIATE.value,
+            ],
+            item_id_getter=lambda x: x,
+            id="edit_lesson_level",
+            on_click=edit_lesson,
+        ),
+        Select(
+            Format("{item}"),
+            items=[
+                LessonLevel.ADVANCED.value,
+                LessonLevel.EXPERT.value,
+            ],
+            item_id_getter=lambda x: x,
+            id="edit_lesson_level",
+            on_click=edit_lesson,
+        ),
+        state=DanceDialog.edit_lesson_level,
+    ),
+    Window(
+        Const("Lesson status to update 📌"),
+        Select(
+            Format("{item}"),
+            items=[e.value for e in LessonStatus],
+            item_id_getter=lambda x: x,
+            id="edit_lesson_status",
+            on_click=edit_lesson,
+        ),
+        state=DanceDialog.edit_lesson_status,
     ),
 )
