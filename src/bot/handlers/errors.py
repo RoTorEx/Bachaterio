@@ -40,6 +40,9 @@ async def handle(error: ErrorEvent, log_chat_id: int, bot: Bot):
         f"{hd.quote(json.dumps(error.update.model_dump(exclude_none=True), default=str)[:3500])}\n",
     )
 
-    chat_id: int = error.update.model_dump(exclude_none=True)["message"]["chat"]["id"]
+    error_event = error.update.model_dump(exclude_none=True)
 
-    await bot.send_message(chat_id=chat_id, text="Something went wrong 🥴")
+    if "message" in error_event:
+        chat_id: int = error_event["message"]["chat"]["id"]
+
+        await bot.send_message(chat_id=chat_id, text="Something went wrong 🥴")
