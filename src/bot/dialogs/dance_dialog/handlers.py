@@ -185,6 +185,13 @@ async def enter_description(message: Message, message_input: MessageInput, manag
     cursor.suggestions.update_one({"suggestion_id": suggestion_id}, {"$set": payload})
 
 
+async def remove_lesson(callback: ChatEvent, select: Any, manager: DialogManager):
+    cursor.tutorials.delete_one({"tg_unique_file_id": manager.dialog_data["lesson_id"]})
+    cursor.suggestions.delete_many({"tg_unique_file_id": manager.dialog_data["lesson_id"]})
+
+    await callback.answer(text="Lesson has been removed", show_alert=True)
+
+
 async def save_suggestion(callback: CallbackQuery, button: Button, manager: DialogManager):
     unique_file_id = manager.dialog_data["lesson_id"]
     suggestion_id = manager.dialog_data["suggestion_id"]

@@ -28,6 +28,7 @@ from .handlers import (
     increment_counter,
     on_date_selected,
     other_type_handler,
+    remove_lesson,
     return_back,
     return_to_menu,
     save_lesson_filter,
@@ -41,17 +42,19 @@ from .handlers import (
 dance_dialog = Dialog(
     Window(
         Const(r"Make your choise"),
-        SwitchTo(
-            Const("New lesson 💡"),
-            id="continue_load",
-            state=DanceDialog.select_lesson_date,
-            when="is_moder",
-        ),
-        SwitchTo(
-            Const("Practice in bachata 🎯"),
-            id="continue_practice",
-            state=DanceDialog.create_lesson_filter,
-            on_click=setup_config,
+        Row(
+            SwitchTo(
+                Const("New lesson 💡"),
+                id="continue_load",
+                state=DanceDialog.select_lesson_date,
+                when="is_moder",
+            ),
+            SwitchTo(
+                Const("Watch lessons 📺"),
+                id="continue_practice",
+                state=DanceDialog.create_lesson_filter,
+                on_click=setup_config,
+            ),
         ),
         Button(
             Const("Back to menu ↩"),
@@ -304,6 +307,9 @@ dance_dialog = Dialog(
             + "<i>Edit tip: to update `description` write message in the chat</i>."
         ),
         DynamicMedia("lesson_video"),
+        SwitchTo(
+            Const("Remove 🗑"), id="switch_to_remove_lesson", state=DanceDialog.edit_remove_lesson, when="is_admin"
+        ),
         Row(
             SwitchTo(
                 Const("Type 📷"),
@@ -323,13 +329,13 @@ dance_dialog = Dialog(
         ),
         SwitchTo(
             Const("Save ✔️"),
-            id="save_and_switch_to_users",
+            id="save_and_switch_to_lessons",
             state=DanceDialog.watch_lesson,
             on_click=save_suggestion,
         ),
         SwitchTo(
-            Const("Revert ❌"),
-            id="switch_to_users",
+            Const("Reset and back 🔄"),
+            id="switch_to_lessons",
             state=DanceDialog.watch_lesson,
         ),
         MessageInput(enter_description, content_types=[ContentType.TEXT]),
@@ -387,5 +393,35 @@ dance_dialog = Dialog(
             on_click=edit_lesson,
         ),
         state=DanceDialog.edit_lesson_status,
+    ),
+    Window(
+        Format(
+            "Id: <i>{lesson_id}</i>\n\n"
+            + f"{html.quote('=== < ~ > ===')}\n\n"
+            + "🗓 Date: <b>{lesson_date}</b>\n"
+            + "📷 Type: <b>{lesson_type}</b>\n"
+            + "📈 Level: <b>{lesson_level}</b>\n"
+            + "📌 Status: <b>{lesson_status}</b>\n"
+            + "📝 Description: <b>{lesson_description}</b>"
+            + "Are you sure you want to remove this lesson?",
+            when="show_lesson",
+        ),
+        SwitchTo(
+            Const("Yes, remove 🧹"),
+            id="remove_and_switch_to_lessons",
+            state=DanceDialog.watch_lesson,
+            on_click=remove_lesson,
+        ),
+        SwitchTo(
+            Const("Reset and back 🔄"),
+            id="switch_to_edit_lessons",
+            state=DanceDialog.edit_lesson,
+        ),
+        DynamicMedia(
+            "lesson_video",
+            when="show_lesson",
+        ),
+        state=DanceDialog.edit_remove_lesson,
+        getter=get_lesson_data,
     ),
 )

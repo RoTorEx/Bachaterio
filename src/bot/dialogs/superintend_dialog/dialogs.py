@@ -127,7 +127,7 @@ superintend_dialog = Dialog(
             on_click=save_level,
         ),
         SwitchTo(
-            Const("Revert ❌"),
+            Const("Revert 🔄"),
             id="switch_to_users",
             state=SuperintendDialog.manage_users,
         ),

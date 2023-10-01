@@ -31,6 +31,8 @@ class DanceDialog(StatesGroup):
     edit_lesson_type = State()
     edit_lesson_level = State()
     edit_lesson_status = State()
+    edit_remove_lesson = State()
+    edit_remove_lesson_confirm = State()
 
 
 # Rules

@@ -146,6 +146,8 @@ async def get_lesson_data(dialog_manager: DialogManager, **kwargs):
 
 
 async def get_edit_lesson_data(dialog_manager: DialogManager, **kwargs):
+    response = {}
+
     unique_file_id = dialog_manager.dialog_data["lesson_id"]
     suggestion_id = dialog_manager.dialog_data["suggestion_id"]
 
@@ -154,10 +156,17 @@ async def get_edit_lesson_data(dialog_manager: DialogManager, **kwargs):
     tutorial = TutorialModel.model_validate(document)
     lesson_video = MediaAttachment(ContentType.VIDEO, file_id=MediaId(tutorial.tg_file_id))
 
+    event_user: User = dialog_manager.middleware_data["event_from_user"]
+
+    document: dict = cursor.users.find_one({"user_id": event_user.id})
+    user_obj = UserModel.model_validate(document)
+
+    if user_obj.level in [UserLevel.ADMIN, UserLevel.SUPERUSER]:
+        response.update({"is_admin": True})
+
     edit_document = cursor.suggestions.find_one({"suggestion_id": suggestion_id})
 
     if not edit_document:
-
         event_user: User = dialog_manager.middleware_data["event_from_user"]
         suggest_obj = SuggestionModel(
             suggestion_id=suggestion_id,
@@ -179,21 +188,23 @@ async def get_edit_lesson_data(dialog_manager: DialogManager, **kwargs):
 
     edit_tutorial = SuggestionModel.model_validate(edit_document)
 
-    response = {
-        # Static
-        "lesson_video": lesson_video,
-        "lesson_id": tutorial.tg_unique_file_id,
-        "lesson_date": tutorial.lesson_date.strftime("%d/%m/%Y"),
-        "lesson_type": tutorial.lesson_type.value if tutorial.lesson_type else "null",
-        "lesson_level": tutorial.lesson_level.value if tutorial.lesson_level else "null",
-        "lesson_status": tutorial.lesson_status.value,
-        "lesson_description": tutorial.lesson_description,
-        # Dinamic
-        "edit_lesson_date": edit_tutorial.edit_lesson_date.strftime("%d/%m/%Y"),
-        "edit_lesson_type": edit_tutorial.edit_lesson_type.value if edit_tutorial.edit_lesson_type else "null",
-        "edit_lesson_level": edit_tutorial.edit_lesson_level.value if edit_tutorial.edit_lesson_level else "null",
-        "edit_lesson_status": edit_tutorial.edit_lesson_status.value,
-        "edit_lesson_description": edit_tutorial.edit_lesson_description,
-    }
+    response.update(
+        {
+            # Static
+            "lesson_video": lesson_video,
+            "lesson_id": tutorial.tg_unique_file_id,
+            "lesson_date": tutorial.lesson_date.strftime("%d/%m/%Y"),
+            "lesson_type": tutorial.lesson_type.value if tutorial.lesson_type else "null",
+            "lesson_level": tutorial.lesson_level.value if tutorial.lesson_level else "null",
+            "lesson_status": tutorial.lesson_status.value,
+            "lesson_description": tutorial.lesson_description,
+            # Dinamic
+            "edit_lesson_date": edit_tutorial.edit_lesson_date.strftime("%d/%m/%Y"),
+            "edit_lesson_type": edit_tutorial.edit_lesson_type.value if edit_tutorial.edit_lesson_type else "null",
+            "edit_lesson_level": edit_tutorial.edit_lesson_level.value if edit_tutorial.edit_lesson_level else "null",
+            "edit_lesson_status": edit_tutorial.edit_lesson_status.value,
+            "edit_lesson_description": edit_tutorial.edit_lesson_description,
+        }
+    )
 
     return response
