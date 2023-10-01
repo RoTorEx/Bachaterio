@@ -1,5 +1,3 @@
-import random as r
-
 from aiogram_dialog import Dialog, Window
 from aiogram_dialog.widgets.kbd import Button, Row
 from aiogram_dialog.widgets.text import Const
@@ -20,7 +18,7 @@ menu_dialog = Dialog(
         ),
         Row(
             Button(
-                Const(f"Dance {r.choice(['🕺', '💃'])}"),
+                Const("Dance 🪩"),
                 id="dance_d",
                 on_click=start_dance_dialog,
                 when="is_member",

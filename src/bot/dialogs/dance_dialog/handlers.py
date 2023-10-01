@@ -92,7 +92,7 @@ async def video_handler(message: Message, message_input: MessageInput, manager: 
 
 
 async def other_type_handler(message: Message, message_input: MessageInput, manager: DialogManager):
-    await message.answer(r"Unsupported type ¯\_(ツ)_/¯. Send video.")
+    await message.answer(r"Unsupported type ¯\_(ツ)_/¯")
 
 
 # ========
@@ -102,6 +102,21 @@ async def setup_config(message: Message, message_input: MessageInput, manager: D
     manager.dialog_data["lesson_type"] = SelectLessonTypeFilter.ALL.value
     manager.dialog_data["lesson_level"] = SelectLessonLevelFilter.ALL.value
     manager.dialog_data["lesson_status"] = SelectLessonStatusFilter.ENABLE.value
+
+
+async def tutorial_id_handler(message: Message, message_input: MessageInput, manager: DialogManager):
+    query = {"id": message.text.strip()}
+    result = cursor.tutorials.find_one(query)
+
+    if result:
+        manager.dialog_data["skip_stamp"] = 0
+        manager.dialog_data["sorting_order"] = SelectLessonOrderFilter.SINGLE
+        manager.dialog_data["query"] = query
+
+        await manager.switch_to(DanceDialog.watch_lesson)
+
+    else:
+        await message.answer("Nothing was found")
 
 
 async def change_order(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str):
@@ -150,8 +165,8 @@ async def save_lesson_filter(callback: ChatEvent, select: Any, manager: DialogMa
     count = cursor.tutorials.count_documents(query)
 
     manager.dialog_data["skip_stamp"] = 0
-    # manager.dialog_data["count"] = count
     manager.dialog_data["sorting_order"] = sorting_order
+    manager.dialog_data["query"] = query
 
     await callback.answer(text=f"I found `{count}` tutorials on your configuration")
 

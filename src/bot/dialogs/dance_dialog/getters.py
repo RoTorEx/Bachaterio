@@ -56,35 +56,25 @@ async def get_lesson_filter_data(dialog_manager: DialogManager, **kwargs) -> dic
 
 
 async def get_lesson_data(dialog_manager: DialogManager, **kwargs):
-    query = {}  # Update with incoming values
     response = {}
 
     skip_stamp = dialog_manager.dialog_data["skip_stamp"]
     sorting_order = dialog_manager.dialog_data["sorting_order"]
-    lesson_type = dialog_manager.dialog_data["lesson_type"]
-    lesson_level = dialog_manager.dialog_data["lesson_level"]
-    lesson_status = dialog_manager.dialog_data["lesson_status"]
-
-    if lesson_type in [LessonType.COMBINATION, LessonType.DANCE, LessonType.ELEMENT]:
-        query.update({"lesson_type": lesson_type})
-
-    if lesson_level in [
-        LessonLevel.NOVICE,
-        LessonLevel.BEGINNER,
-        LessonLevel.INTERMEDIATE,
-        LessonLevel.ADVANCED,
-        LessonLevel.EXPERT,
-    ]:
-        query.update({"lesson_level": lesson_level})
-
-    query.update({"lesson_status": lesson_status})
+    query = dialog_manager.dialog_data["query"]
 
     tutorial = None
     count = cursor.tutorials.count_documents(query)
     dialog_manager.dialog_data["count"] = count
 
-    if sorting_order == SelectLessonOrderFilter.RANDOM:
+    if sorting_order == SelectLessonOrderFilter.SINGLE:
+        result = cursor.tutorials.find_one(query)
+
+        if result:
+            tutorial = TutorialModel.model_validate(result)
+
+    elif sorting_order == SelectLessonOrderFilter.RANDOM:
         unique_ids = cursor.tutorials.find(query).distinct("tg_unique_file_id")
+
         if unique_ids:
             unique_id = r.choice(unique_ids)
             document = cursor.tutorials.find_one({"tg_unique_file_id": unique_id})

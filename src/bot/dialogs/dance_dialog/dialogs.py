@@ -35,6 +35,7 @@ from .handlers import (
     save_suggestion,
     setup_config,
     update_info,
+    tutorial_id_handler,
     video_handler,
 )
 
@@ -102,6 +103,12 @@ dance_dialog = Dialog(
             + "📌 Lesson status: <b>{lesson_status}</b>\n\n"
             + "<i>Tip: Use buttons below to adjust the current config and start dancing to continue</i>."
         ),
+        SwitchTo(
+            Const("Find by id �"),
+            id="switch_to_specific_lesson",
+            # on_click=save_lesson_filter,
+            state=DanceDialog.watch_specific_lesson,
+        ),
         Row(
             SwitchTo(
                 Const("Order 🔗"),
@@ -139,6 +146,17 @@ dance_dialog = Dialog(
         ),
         state=DanceDialog.create_lesson_filter,
         getter=get_lesson_filter_data,
+    ),
+    Window(
+        Const("Please send specific lesson id �"),
+        SwitchTo(
+            Const("Back ↩"),
+            id="switch_to_filter",
+            state=DanceDialog.create_lesson_filter,
+        ),
+        MessageInput(tutorial_id_handler, content_types=[ContentType.TEXT]),
+        MessageInput(other_type_handler),
+        state=DanceDialog.watch_specific_lesson,
     ),
     # # Filter lesson selection
     Window(
@@ -235,7 +253,7 @@ dance_dialog = Dialog(
     Window(
         Multi(
             Format(
-                "🔧 Id: <i>{lesson_id}</i>\n\n"
+                "� Id: <i>{lesson_id}</i>\n\n"
                 + f"{html.quote('=== < ~ > ===')}\n\n"
                 + "🗓 Date: <b>{lesson_date}</b>\n"
                 + "📷 Type: <b>{lesson_type}</b>\n"
@@ -288,7 +306,7 @@ dance_dialog = Dialog(
     ),
     Window(
         Format(
-            "🔧 Id: <i>{lesson_id}</i>\n\n"
+            "� Id: <i>{lesson_id}</i>\n\n"
             + f"{html.quote('=== < ~ > ===')}\n\n"
             + "<u>Current lesson info</u>:\n"
             + "🗓 Date: <i>{lesson_date}</i>\n"
@@ -396,7 +414,7 @@ dance_dialog = Dialog(
     ),
     Window(
         Format(
-            "🔧 Id: <i>{lesson_id}</i>\n\n"
+            "� Id: <i>{lesson_id}</i>\n\n"
             + f"{html.quote('=== < ~ > ===')}\n\n"
             + "🗓 Date: <b>{lesson_date}</b>\n"
             + "📷 Type: <b>{lesson_type}</b>\n"
