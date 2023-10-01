@@ -127,7 +127,7 @@ async def get_lesson_data(dialog_manager: DialogManager, **kwargs):
                 "count": count,
                 "show_lesson": True,
                 "lesson_video": lesson_video,
-                "lesson_id": tutorial.tg_unique_file_id,
+                "lesson_id": tutorial.id,
                 "lesson_date": tutorial.lesson_date.strftime("%d/%m/%Y"),
                 "lesson_type": tutorial.lesson_type.value if tutorial.lesson_type else "null",
                 "lesson_level": tutorial.lesson_level.value if tutorial.lesson_level else "null",
@@ -135,7 +135,7 @@ async def get_lesson_data(dialog_manager: DialogManager, **kwargs):
                 "lesson_description": tutorial.lesson_description,
             }
         )
-        dialog_manager.dialog_data["lesson_id"] = tutorial.tg_unique_file_id
+        dialog_manager.dialog_data["tg_unique_file_id"] = tutorial.tg_unique_file_id
 
     else:
         response = {
@@ -148,7 +148,7 @@ async def get_lesson_data(dialog_manager: DialogManager, **kwargs):
 async def get_edit_lesson_data(dialog_manager: DialogManager, **kwargs):
     response = {}
 
-    unique_file_id = dialog_manager.dialog_data["lesson_id"]
+    unique_file_id = dialog_manager.dialog_data["tg_unique_file_id"]
     suggestion_id = dialog_manager.dialog_data["suggestion_id"]
 
     document: dict = cursor.tutorials.find_one({"tg_unique_file_id": unique_file_id})
@@ -164,12 +164,13 @@ async def get_edit_lesson_data(dialog_manager: DialogManager, **kwargs):
     if user_obj.level in [UserLevel.ADMIN, UserLevel.SUPERUSER]:
         response.update({"is_admin": True})
 
-    edit_document = cursor.suggestions.find_one({"suggestion_id": suggestion_id})
+    edit_document = cursor.suggestions.find_one({"id": suggestion_id})
 
     if not edit_document:
         event_user: User = dialog_manager.middleware_data["event_from_user"]
         suggest_obj = SuggestionModel(
-            suggestion_id=suggestion_id,
+            id=suggestion_id,
+            tutorial_id=tutorial.id,
             tg_unique_file_id=tutorial.tg_unique_file_id,
             edit_lesson_description=tutorial.lesson_description,
             edit_lesson_date=tutorial.lesson_date,
@@ -183,7 +184,7 @@ async def get_edit_lesson_data(dialog_manager: DialogManager, **kwargs):
         )
 
         edit_document = cursor.suggestions.find_one_and_update(
-            {"suggestion_id": str(suggestion_id)}, {"$set": suggest_obj.model_dump()}, upsert=True, return_document=True
+            {"id": str(suggestion_id)}, {"$set": suggest_obj.model_dump()}, upsert=True, return_document=True
         )
 
     edit_tutorial = SuggestionModel.model_validate(edit_document)
@@ -192,7 +193,7 @@ async def get_edit_lesson_data(dialog_manager: DialogManager, **kwargs):
         {
             # Static
             "lesson_video": lesson_video,
-            "lesson_id": tutorial.tg_unique_file_id,
+            "lesson_id": tutorial.id,
             "lesson_date": tutorial.lesson_date.strftime("%d/%m/%Y"),
             "lesson_type": tutorial.lesson_type.value if tutorial.lesson_type else "null",
             "lesson_level": tutorial.lesson_level.value if tutorial.lesson_level else "null",

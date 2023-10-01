@@ -6,7 +6,8 @@ from .base import BaseAdminModel
 
 
 class SuggestionModel(BaseAdminModel):
-    suggestion_id: str
+    id: str
+    tutorial_id: str
     tg_unique_file_id: str
     edit_lesson_description: str
     edit_lesson_date: datetime

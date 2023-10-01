@@ -1,4 +1,5 @@
 from typing import Any
+from uuid import uuid4
 
 from aiogram import Bot
 from aiogram.types import Message
@@ -102,3 +103,27 @@ async def save_level(callback: ChatEvent, select: Any, manager: DialogManager):
 # SUGGESTIONS
 async def manage_suggestions(callback: ChatEvent, select: Any, manager: DialogManager):
     await callback.answer(text="Not implemented!", show_alert=True)
+
+
+# ===========
+# DO ACTION
+async def do_some_action(callback: ChatEvent, select: Any, manager: DialogManager):
+    # await callback.answer(text="Unavailable now.", show_alert=True)
+    all_tutorials = cursor.tutorials.find({"id": None}).distinct("tg_unique_file_id")
+
+    tutorials_count = 0
+    suggestions_count = 0
+    for tutorial_file_id in all_tutorials:
+        obj_id = str(uuid4())
+
+        result = cursor.tutorials.update_one({"tg_unique_file_id": tutorial_file_id}, {"$set": {"id": obj_id}})
+        tutorials_count += result.modified_count
+
+        result = cursor.suggestions.update_many(
+            {"tg_unique_file_id": tutorial_file_id}, {"$set": {"tutorial_id": obj_id}}
+        )
+        suggestions_count += result.modified_count
+
+    await callback.answer(
+        text=f"`{tutorials_count}` tutorials and `{suggestions_count}` suggestions were modified.", show_alert=True
+    )

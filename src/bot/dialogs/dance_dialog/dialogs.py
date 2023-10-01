@@ -235,7 +235,7 @@ dance_dialog = Dialog(
     Window(
         Multi(
             Format(
-                "Id: <i>{lesson_id}</i>\n\n"
+                "🔧 Id: <i>{lesson_id}</i>\n\n"
                 + f"{html.quote('=== < ~ > ===')}\n\n"
                 + "🗓 Date: <b>{lesson_date}</b>\n"
                 + "📷 Type: <b>{lesson_type}</b>\n"
@@ -288,16 +288,16 @@ dance_dialog = Dialog(
     ),
     Window(
         Format(
-            "Id: <i>{lesson_id}</i>\n\n"
+            "🔧 Id: <i>{lesson_id}</i>\n\n"
             + f"{html.quote('=== < ~ > ===')}\n\n"
-            + "Current lesson info:\n"
+            + "<u>Current lesson info</u>:\n"
             + "🗓 Date: <i>{lesson_date}</i>\n"
             + "📷 Type: <i>{lesson_type}</i>\n"
             + "📈 Level: <i>{lesson_level}</i>\n"
             + "📌 Status: <i>{lesson_status}</i>\n"
             + "📝 Description: <i>{lesson_description}</i>\n\n"
             + f"{html.quote('=== < ~ > ===')}\n\n"
-            + "Suggested changes:\n"
+            + "<u>Suggested changes</u>:\n"
             + "🗓 Date: <i>Changes are locked</i>\n"
             + "📷 Type: <b>{edit_lesson_type}</b>\n"
             + "📈 Level: <b>{edit_lesson_level}</b>\n"
@@ -396,7 +396,7 @@ dance_dialog = Dialog(
     ),
     Window(
         Format(
-            "Id: <i>{lesson_id}</i>\n\n"
+            "🔧 Id: <i>{lesson_id}</i>\n\n"
             + f"{html.quote('=== < ~ > ===')}\n\n"
             + "🗓 Date: <b>{lesson_date}</b>\n"
             + "📷 Type: <b>{lesson_type}</b>\n"

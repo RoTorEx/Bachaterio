@@ -61,6 +61,7 @@ async def video_handler(message: Message, message_input: MessageInput, manager: 
 
     if not result:
         tutorial_obj = TutorialModel(
+            id=str(uuid4()),
             tg_unique_file_id=tg_unique_file_id,
             tg_file_id=tg_file_id,
             original_file_name=original_file_name,
@@ -178,26 +179,26 @@ async def increment_counter(callback: ChatEvent, select: Any, manager: DialogMan
 
 
 async def enter_description(message: Message, message_input: MessageInput, manager: DialogManager):
-    _ = manager.dialog_data["lesson_id"]
+    _ = manager.dialog_data["tg_unique_file_id"]
     suggestion_id = manager.dialog_data["suggestion_id"]
 
     payload = {"edit_lesson_description": message.text}
-    cursor.suggestions.update_one({"suggestion_id": suggestion_id}, {"$set": payload})
+    cursor.suggestions.update_one({"id": suggestion_id}, {"$set": payload})
 
 
 async def remove_lesson(callback: ChatEvent, select: Any, manager: DialogManager):
-    cursor.tutorials.delete_one({"tg_unique_file_id": manager.dialog_data["lesson_id"]})
-    cursor.suggestions.delete_many({"tg_unique_file_id": manager.dialog_data["lesson_id"]})
+    cursor.tutorials.delete_one({"tg_unique_file_id": manager.dialog_data["tg_unique_file_id"]})
+    cursor.suggestions.delete_many({"tg_unique_file_id": manager.dialog_data["tg_unique_file_id"]})
 
     await callback.answer(text="Lesson has been removed", show_alert=True)
 
 
 async def save_suggestion(callback: CallbackQuery, button: Button, manager: DialogManager):
-    unique_file_id = manager.dialog_data["lesson_id"]
+    unique_file_id = manager.dialog_data["tg_unique_file_id"]
     suggestion_id = manager.dialog_data["suggestion_id"]
 
     edit_suggestion_document: dict = cursor.suggestions.find_one_and_update(
-        {"suggestion_id": suggestion_id},
+        {"id": suggestion_id},
         {
             "$set": {
                 "is_active": True,
@@ -218,21 +219,21 @@ async def save_suggestion(callback: CallbackQuery, button: Button, manager: Dial
                 "lesson_type": edit_suggestion_lesson.edit_lesson_type,
                 "lesson_level": edit_suggestion_lesson.edit_lesson_level,
                 "lesson_status": edit_suggestion_lesson.edit_lesson_status,
-                "suggestion_id": edit_suggestion_lesson.suggestion_id,
+                "suggestion_id": edit_suggestion_lesson.id,
                 "last_updated_at": datetime.utcnow(),
             }
         },
     )
 
     logger.info(
-        f"New suggestion `{edit_suggestion_lesson.suggestion_id}` from `{edit_suggestion_lesson.suggested_by}`."
+        f"New suggestion `{edit_suggestion_lesson.id}` from `{edit_suggestion_lesson.suggested_by}`."
     )
 
 
 async def edit_lesson(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str):
     payload = {}
 
-    _ = manager.dialog_data["lesson_id"]
+    _ = manager.dialog_data["tg_unique_file_id"]
     suggestion_id = manager.dialog_data["suggestion_id"]
 
     if LessonType.has_value(item_id):
@@ -244,6 +245,6 @@ async def edit_lesson(callback: ChatEvent, select: Any, manager: DialogManager, 
     if LessonStatus.has_value(item_id):
         payload.update({"edit_lesson_status": item_id})
 
-    cursor.suggestions.update_one({"suggestion_id": suggestion_id}, {"$set": payload})
+    cursor.suggestions.update_one({"id": suggestion_id}, {"$set": payload})
 
     await manager.switch_to(DanceDialog.edit_lesson)
