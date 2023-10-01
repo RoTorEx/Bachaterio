@@ -7,6 +7,7 @@ class SelectLessonOrderFilter(str, Enum):
     RANDOM = "🎲"
     LAST_LOADED = "last loaded"
     FIRST_LOADED = "first loaded"
+    SINGLE = "single"
 
     @classmethod
     def has_value(cls, value):

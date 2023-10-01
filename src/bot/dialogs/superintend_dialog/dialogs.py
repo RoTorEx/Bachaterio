@@ -19,6 +19,7 @@ from .handlers import (
     set_level,
     text_message_handler,
     try_update_level,
+    do_some_action
 )
 
 
@@ -27,7 +28,7 @@ superintend_dialog = Dialog(
         Const("<b>GOD mode activated!</b>"),
         Row(
             SwitchTo(
-                Const("Users 👤"), id="c_manage_users", on_click=manage_users, state=SuperintendDialog.manage_users
+                Const("Users 👤"), id="c_manage_users", on_click=manage_users, state=SuperintendDialog.manage_users,
             ),
             SwitchTo(
                 Const("Suggestions 📝"),
@@ -35,6 +36,11 @@ superintend_dialog = Dialog(
                 on_click=manage_suggestions,
                 state=SuperintendDialog.start,
             ),
+        ),
+        Button(
+            Const("Do action 🎬"),
+            id="do_action",
+            on_click=do_some_action,
         ),
         Button(
             Const("Back to menu ↩"),
@@ -127,7 +133,7 @@ superintend_dialog = Dialog(
             on_click=save_level,
         ),
         SwitchTo(
-            Const("Revert ❌"),
+            Const("Revert 🔄"),
             id="switch_to_users",
             state=SuperintendDialog.manage_users,
         ),

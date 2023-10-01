@@ -6,6 +6,7 @@ from .base import BaseAdminModel
 
 
 class TutorialModel(BaseAdminModel):
+    id: str
     tg_unique_file_id: str
     tg_file_id: str
     original_file_name: str

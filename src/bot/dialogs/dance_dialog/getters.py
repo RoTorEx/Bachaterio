@@ -56,35 +56,25 @@ async def get_lesson_filter_data(dialog_manager: DialogManager, **kwargs) -> dic
 
 
 async def get_lesson_data(dialog_manager: DialogManager, **kwargs):
-    query = {}  # Update with incoming values
     response = {}
 
     skip_stamp = dialog_manager.dialog_data["skip_stamp"]
     sorting_order = dialog_manager.dialog_data["sorting_order"]
-    lesson_type = dialog_manager.dialog_data["lesson_type"]
-    lesson_level = dialog_manager.dialog_data["lesson_level"]
-    lesson_status = dialog_manager.dialog_data["lesson_status"]
-
-    if lesson_type in [LessonType.COMBINATION, LessonType.DANCE, LessonType.ELEMENT]:
-        query.update({"lesson_type": lesson_type})
-
-    if lesson_level in [
-        LessonLevel.NOVICE,
-        LessonLevel.BEGINNER,
-        LessonLevel.INTERMEDIATE,
-        LessonLevel.ADVANCED,
-        LessonLevel.EXPERT,
-    ]:
-        query.update({"lesson_level": lesson_level})
-
-    query.update({"lesson_status": lesson_status})
+    query = dialog_manager.dialog_data["query"]
 
     tutorial = None
     count = cursor.tutorials.count_documents(query)
     dialog_manager.dialog_data["count"] = count
 
-    if sorting_order == SelectLessonOrderFilter.RANDOM:
+    if sorting_order == SelectLessonOrderFilter.SINGLE:
+        result = cursor.tutorials.find_one(query)
+
+        if result:
+            tutorial = TutorialModel.model_validate(result)
+
+    elif sorting_order == SelectLessonOrderFilter.RANDOM:
         unique_ids = cursor.tutorials.find(query).distinct("tg_unique_file_id")
+
         if unique_ids:
             unique_id = r.choice(unique_ids)
             document = cursor.tutorials.find_one({"tg_unique_file_id": unique_id})
@@ -127,7 +117,7 @@ async def get_lesson_data(dialog_manager: DialogManager, **kwargs):
                 "count": count,
                 "show_lesson": True,
                 "lesson_video": lesson_video,
-                "lesson_id": tutorial.tg_unique_file_id,
+                "lesson_id": tutorial.id,
                 "lesson_date": tutorial.lesson_date.strftime("%d/%m/%Y"),
                 "lesson_type": tutorial.lesson_type.value if tutorial.lesson_type else "null",
                 "lesson_level": tutorial.lesson_level.value if tutorial.lesson_level else "null",
@@ -135,7 +125,7 @@ async def get_lesson_data(dialog_manager: DialogManager, **kwargs):
                 "lesson_description": tutorial.lesson_description,
             }
         )
-        dialog_manager.dialog_data["lesson_id"] = tutorial.tg_unique_file_id
+        dialog_manager.dialog_data["tg_unique_file_id"] = tutorial.tg_unique_file_id
 
     else:
         response = {
@@ -146,7 +136,9 @@ async def get_lesson_data(dialog_manager: DialogManager, **kwargs):
 
 
 async def get_edit_lesson_data(dialog_manager: DialogManager, **kwargs):
-    unique_file_id = dialog_manager.dialog_data["lesson_id"]
+    response = {}
+
+    unique_file_id = dialog_manager.dialog_data["tg_unique_file_id"]
     suggestion_id = dialog_manager.dialog_data["suggestion_id"]
 
     document: dict = cursor.tutorials.find_one({"tg_unique_file_id": unique_file_id})
@@ -154,13 +146,21 @@ async def get_edit_lesson_data(dialog_manager: DialogManager, **kwargs):
     tutorial = TutorialModel.model_validate(document)
     lesson_video = MediaAttachment(ContentType.VIDEO, file_id=MediaId(tutorial.tg_file_id))
 
-    edit_document = cursor.suggestions.find_one({"suggestion_id": suggestion_id})
+    event_user: User = dialog_manager.middleware_data["event_from_user"]
+
+    document: dict = cursor.users.find_one({"user_id": event_user.id})
+    user_obj = UserModel.model_validate(document)
+
+    if user_obj.level in [UserLevel.ADMIN, UserLevel.SUPERUSER]:
+        response.update({"is_admin": True})
+
+    edit_document = cursor.suggestions.find_one({"id": suggestion_id})
 
     if not edit_document:
-
         event_user: User = dialog_manager.middleware_data["event_from_user"]
         suggest_obj = SuggestionModel(
-            suggestion_id=suggestion_id,
+            id=suggestion_id,
+            tutorial_id=tutorial.id,
             tg_unique_file_id=tutorial.tg_unique_file_id,
             edit_lesson_description=tutorial.lesson_description,
             edit_lesson_date=tutorial.lesson_date,
@@ -174,26 +174,28 @@ async def get_edit_lesson_data(dialog_manager: DialogManager, **kwargs):
         )
 
         edit_document = cursor.suggestions.find_one_and_update(
-            {"suggestion_id": str(suggestion_id)}, {"$set": suggest_obj.model_dump()}, upsert=True, return_document=True
+            {"id": str(suggestion_id)}, {"$set": suggest_obj.model_dump()}, upsert=True, return_document=True
         )
 
     edit_tutorial = SuggestionModel.model_validate(edit_document)
 
-    response = {
-        # Static
-        "lesson_video": lesson_video,
-        "lesson_id": tutorial.tg_unique_file_id,
-        "lesson_date": tutorial.lesson_date.strftime("%d/%m/%Y"),
-        "lesson_type": tutorial.lesson_type.value if tutorial.lesson_type else "null",
-        "lesson_level": tutorial.lesson_level.value if tutorial.lesson_level else "null",
-        "lesson_status": tutorial.lesson_status.value,
-        "lesson_description": tutorial.lesson_description,
-        # Dinamic
-        "edit_lesson_date": edit_tutorial.edit_lesson_date.strftime("%d/%m/%Y"),
-        "edit_lesson_type": edit_tutorial.edit_lesson_type.value if edit_tutorial.edit_lesson_type else "null",
-        "edit_lesson_level": edit_tutorial.edit_lesson_level.value if edit_tutorial.edit_lesson_level else "null",
-        "edit_lesson_status": edit_tutorial.edit_lesson_status.value,
-        "edit_lesson_description": edit_tutorial.edit_lesson_description,
-    }
+    response.update(
+        {
+            # Static
+            "lesson_video": lesson_video,
+            "lesson_id": tutorial.id,
+            "lesson_date": tutorial.lesson_date.strftime("%d/%m/%Y"),
+            "lesson_type": tutorial.lesson_type.value if tutorial.lesson_type else "null",
+            "lesson_level": tutorial.lesson_level.value if tutorial.lesson_level else "null",
+            "lesson_status": tutorial.lesson_status.value,
+            "lesson_description": tutorial.lesson_description,
+            # Dinamic
+            "edit_lesson_date": edit_tutorial.edit_lesson_date.strftime("%d/%m/%Y"),
+            "edit_lesson_type": edit_tutorial.edit_lesson_type.value if edit_tutorial.edit_lesson_type else "null",
+            "edit_lesson_level": edit_tutorial.edit_lesson_level.value if edit_tutorial.edit_lesson_level else "null",
+            "edit_lesson_status": edit_tutorial.edit_lesson_status.value,
+            "edit_lesson_description": edit_tutorial.edit_lesson_description,
+        }
+    )
 
     return response

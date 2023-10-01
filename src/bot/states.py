@@ -26,11 +26,14 @@ class DanceDialog(StatesGroup):
     filter_status = State()
     # # Watch
     watch_lesson = State()
+    watch_specific_lesson = State()
     # # Edit
     edit_lesson = State()
     edit_lesson_type = State()
     edit_lesson_level = State()
     edit_lesson_status = State()
+    edit_remove_lesson = State()
+    edit_remove_lesson_confirm = State()
 
 
 # Rules
