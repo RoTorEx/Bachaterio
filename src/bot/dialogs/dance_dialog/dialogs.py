@@ -104,7 +104,7 @@ dance_dialog = Dialog(
             + "<i>Tip: Use buttons below to adjust the current config and start dancing to continue</i>."
         ),
         SwitchTo(
-            Const("Find by id �"),
+            Const("Find by id 🔎"),
             id="switch_to_specific_lesson",
             # on_click=save_lesson_filter,
             state=DanceDialog.watch_specific_lesson,
@@ -134,7 +134,7 @@ dance_dialog = Dialog(
             ),
         ),
         SwitchTo(
-            Const("Let's dance 🪩"),
+            Const("Let's dance 🕺🪩💃"),
             id="back_to_section",
             on_click=save_lesson_filter,
             state=DanceDialog.watch_lesson,
@@ -148,7 +148,7 @@ dance_dialog = Dialog(
         getter=get_lesson_filter_data,
     ),
     Window(
-        Const("Please send specific lesson id �"),
+        Const("Please send specific lesson id 🔎"),
         SwitchTo(
             Const("Back ↩"),
             id="switch_to_filter",
@@ -253,7 +253,7 @@ dance_dialog = Dialog(
     Window(
         Multi(
             Format(
-                "� Id: <i>{lesson_id}</i>\n\n"
+                "🔎 Id: <i>{lesson_id}</i>\n\n"
                 + f"{html.quote('=== < ~ > ===')}\n\n"
                 + "🗓 Date: <b>{lesson_date}</b>\n"
                 + "📷 Type: <b>{lesson_type}</b>\n"
@@ -306,7 +306,7 @@ dance_dialog = Dialog(
     ),
     Window(
         Format(
-            "� Id: <i>{lesson_id}</i>\n\n"
+            "🔎 Id: <i>{lesson_id}</i>\n\n"
             + f"{html.quote('=== < ~ > ===')}\n\n"
             + "<u>Current lesson info</u>:\n"
             + "🗓 Date: <i>{lesson_date}</i>\n"
@@ -414,7 +414,7 @@ dance_dialog = Dialog(
     ),
     Window(
         Format(
-            "� Id: <i>{lesson_id}</i>\n\n"
+            "🔎 Id: <i>{lesson_id}</i>\n\n"
             + f"{html.quote('=== < ~ > ===')}\n\n"
             + "🗓 Date: <b>{lesson_date}</b>\n"
             + "📷 Type: <b>{lesson_type}</b>\n"
