@@ -18,7 +18,7 @@ menu_dialog = Dialog(
         ),
         Row(
             Button(
-                Const("Dance 🪩"),
+                Const("Dance 🕺🪩💃"),
                 id="dance_d",
                 on_click=start_dance_dialog,
                 when="is_member",
