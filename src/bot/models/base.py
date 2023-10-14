@@ -24,9 +24,9 @@ class _BaseAdminModel:
 
 class BaseAdminModel(BaseModel, _BaseAdminModel):
     class Config:
-        anystr_strip_whitespace = True
-        min_anystr_length = 0
+        str_strip_whitespace = True
+        str_min_length = 0
         extra = Extra.ignore
         arbitrary_types_allowed = True
-        allow_population_by_field_name = True
+        populate_by_name = True
         json_encoders = {datetime: iso_8601_datetime_with_z_suffix}

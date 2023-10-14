@@ -1,8 +1,8 @@
 # Base
 [tool.poetry]
 name = "Bachaterio"
-version = "1.4.0"
-description = "I keep and show bachata 'for my own'"
+version = "1.4.1"
+description = "I'm the Keeper of Bachata Knowledge"
 authors = ["Aleksey Strelkov <aleks.strel.8v@gmail.com>"]
 
 
