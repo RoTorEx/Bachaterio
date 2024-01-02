@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.bot.enums import LessonLevel, LessonStatus, LessonType
+from src.bot.enums import LessonLevel, LessonType
 
 from .base import BaseAdminModel
 
@@ -14,7 +14,6 @@ class TutorialModel(BaseAdminModel):
     lesson_date: datetime
     lesson_type: LessonType | None
     lesson_level: LessonLevel | None
-    lesson_status: LessonStatus
     loaded_by: int
     is_active: bool
     last_updated_at: datetime | None
