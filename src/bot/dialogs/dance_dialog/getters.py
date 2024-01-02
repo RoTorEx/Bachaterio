@@ -5,7 +5,7 @@ from aiogram.types import ContentType, User
 from aiogram_dialog import DialogManager
 from aiogram_dialog.api.entities import MediaAttachment, MediaId
 
-from src.bot.enums import LessonLevel, LessonType, SelectLessonOrderFilter, SuggestionStatus, UserLevel
+from src.bot.enums import SelectLessonOrderFilter, SuggestionStatus, UserLevel
 from src.bot.models import SuggestionModel, TutorialModel, UserModel
 from src.infrastructure.database import cursor
 

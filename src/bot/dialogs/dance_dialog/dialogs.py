@@ -31,8 +31,8 @@ from .handlers import (
     save_lesson_filter,
     save_suggestion,
     setup_config,
-    update_info,
     tutorial_id_handler,
+    update_info,
     video_handler,
 )
 
@@ -375,8 +375,7 @@ dance_dialog = Dialog(
             + "📷 Type: <b>{lesson_type}</b>\n"
             + "📈 Level: <b>{lesson_level}</b>\n"
             # + "💡 Status: <b>{lesson_status}</b>\n"
-            + "📝 Description: <b>{lesson_description}</b>"
-            + "Are you sure you want to remove this lesson?",
+            + "📝 Description: <b>{lesson_description}</b>" + "Are you sure you want to remove this lesson?",
             when="show_lesson",
         ),
         SwitchTo(

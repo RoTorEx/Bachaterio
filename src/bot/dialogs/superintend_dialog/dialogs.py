@@ -10,6 +10,7 @@ from src.bot.states import SuperintendDialog
 
 from .getters import get_data_manage_user, get_data_update_user_level
 from .handlers import (
+    do_some_action,
     increment_counter,
     manage_suggestions,
     manage_users,
@@ -19,7 +20,6 @@ from .handlers import (
     set_level,
     text_message_handler,
     try_update_level,
-    do_some_action
 )
 
 
@@ -28,7 +28,10 @@ superintend_dialog = Dialog(
         Const("<b>GOD mode activated!</b>"),
         Row(
             SwitchTo(
-                Const("Users 👤"), id="c_manage_users", on_click=manage_users, state=SuperintendDialog.manage_users,
+                Const("Users 👤"),
+                id="c_manage_users",
+                on_click=manage_users,
+                state=SuperintendDialog.manage_users,
             ),
             SwitchTo(
                 Const("Suggestions 📝"),

@@ -227,9 +227,7 @@ async def save_suggestion(callback: CallbackQuery, button: Button, manager: Dial
         },
     )
 
-    logger.info(
-        f"New suggestion `{edit_suggestion_lesson.id}` from `{edit_suggestion_lesson.suggested_by}`."
-    )
+    logger.info(f"New suggestion `{edit_suggestion_lesson.id}` from `{edit_suggestion_lesson.suggested_by}`.")
 
 
 async def edit_lesson(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str):
