@@ -49,7 +49,6 @@ async def get_lesson_filter_data(dialog_manager: DialogManager, **kwargs) -> dic
         "lesson_order": dialog_manager.dialog_data["lesson_order"],
         "lesson_type": dialog_manager.dialog_data["lesson_type"],
         "lesson_level": dialog_manager.dialog_data["lesson_level"],
-        "lesson_status": dialog_manager.dialog_data["lesson_status"],
     }
 
     return response
@@ -121,7 +120,6 @@ async def get_lesson_data(dialog_manager: DialogManager, **kwargs):
                 "lesson_date": tutorial.lesson_date.strftime("%d/%m/%Y"),
                 "lesson_type": tutorial.lesson_type.value if tutorial.lesson_type else "null",
                 "lesson_level": tutorial.lesson_level.value if tutorial.lesson_level else "null",
-                "lesson_status": tutorial.lesson_status.value,
                 "lesson_description": tutorial.lesson_description,
             }
         )
@@ -166,7 +164,6 @@ async def get_edit_lesson_data(dialog_manager: DialogManager, **kwargs):
             edit_lesson_date=tutorial.lesson_date,
             edit_lesson_type=tutorial.lesson_type,
             edit_lesson_level=tutorial.lesson_level,
-            edit_lesson_status=tutorial.lesson_status,
             suggestion_status=SuggestionStatus.PENDING,
             suggested_by=event_user.id,  # ToDo: fixit
             is_active=False,
@@ -187,13 +184,11 @@ async def get_edit_lesson_data(dialog_manager: DialogManager, **kwargs):
             "lesson_date": tutorial.lesson_date.strftime("%d/%m/%Y"),
             "lesson_type": tutorial.lesson_type.value if tutorial.lesson_type else "null",
             "lesson_level": tutorial.lesson_level.value if tutorial.lesson_level else "null",
-            "lesson_status": tutorial.lesson_status.value,
             "lesson_description": tutorial.lesson_description,
             # Dinamic
             "edit_lesson_date": edit_tutorial.edit_lesson_date.strftime("%d/%m/%Y"),
             "edit_lesson_type": edit_tutorial.edit_lesson_type.value if edit_tutorial.edit_lesson_type else "null",
             "edit_lesson_level": edit_tutorial.edit_lesson_level.value if edit_tutorial.edit_lesson_level else "null",
-            "edit_lesson_status": edit_tutorial.edit_lesson_status.value,
             "edit_lesson_description": edit_tutorial.edit_lesson_description,
         }
     )

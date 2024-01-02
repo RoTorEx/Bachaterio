@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from src.bot.enums import LessonLevel, LessonStatus, LessonType, SuggestionStatus
+from src.bot.enums import LessonLevel, LessonType
 
 from .base import BaseAdminModel
 
@@ -13,8 +13,6 @@ class SuggestionModel(BaseAdminModel):
     edit_lesson_date: datetime
     edit_lesson_type: LessonType | None
     edit_lesson_level: LessonLevel | None
-    edit_lesson_status: LessonStatus
-    suggestion_status: SuggestionStatus
     suggested_by: int
     is_active: bool
     created_at: datetime
