@@ -11,11 +11,9 @@ from bson import ObjectId
 
 from src.bot.enums import (
     LessonLevel,
-    LessonStatus,
     LessonType,
     SelectLessonLevelFilter,
     SelectLessonOrderFilter,
-    SelectLessonStatusFilter,
     SelectLessonTypeFilter,
     SuggestionStatus,
 )
@@ -69,7 +67,6 @@ async def video_handler(message: Message, message_input: MessageInput, manager: 
             lesson_type=None,
             lesson_date=lesson_date,
             lesson_level=None,
-            lesson_status=LessonStatus.DISABLE,
             loaded_by=message.from_user.id,
             is_active=True,
             last_updated_at=None,
@@ -101,7 +98,6 @@ async def setup_config(message: Message, message_input: MessageInput, manager: D
     manager.dialog_data["lesson_order"] = SelectLessonOrderFilter.NEWEST.value
     manager.dialog_data["lesson_type"] = SelectLessonTypeFilter.ALL.value
     manager.dialog_data["lesson_level"] = SelectLessonLevelFilter.ALL.value
-    manager.dialog_data["lesson_status"] = SelectLessonStatusFilter.ENABLE.value
 
 
 async def tutorial_id_handler(message: Message, message_input: MessageInput, manager: DialogManager):
@@ -134,19 +130,13 @@ async def change_level(callback: ChatEvent, select: Any, manager: DialogManager,
     await manager.switch_to(DanceDialog.create_lesson_filter)
 
 
-# ToDo: lock this function for nonmanager users (use reauest to MongoDB)
-async def change_status(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str):
-    manager.dialog_data["lesson_status"] = item_id
-    await manager.switch_to(DanceDialog.create_lesson_filter)
-
-
 async def save_lesson_filter(callback: ChatEvent, select: Any, manager: DialogManager) -> None:
     query = {}  # Update with incoming values
 
     sorting_order = manager.dialog_data["lesson_order"]
     lesson_type = manager.dialog_data["lesson_type"]
     lesson_level = manager.dialog_data["lesson_level"]
-    lesson_status = manager.dialog_data["lesson_status"]
+    # lesson_status = manager.dialog_data["lesson_status"]
 
     if lesson_type in [LessonType.COMBINATION, LessonType.DANCE, LessonType.ELEMENT]:
         query.update({"lesson_type": lesson_type})
@@ -159,8 +149,6 @@ async def save_lesson_filter(callback: ChatEvent, select: Any, manager: DialogMa
         LessonLevel.EXPERT,
     ]:
         query.update({"lesson_level": lesson_level})
-
-    query.update({"lesson_status": lesson_status})
 
     count = cursor.tutorials.count_documents(query)
 
@@ -233,16 +221,13 @@ async def save_suggestion(callback: CallbackQuery, button: Button, manager: Dial
                 # "lesson_date": edit_suggestion_lesson.edit_lesson_date,  # !Not ready change dates!
                 "lesson_type": edit_suggestion_lesson.edit_lesson_type,
                 "lesson_level": edit_suggestion_lesson.edit_lesson_level,
-                "lesson_status": edit_suggestion_lesson.edit_lesson_status,
                 "suggestion_id": edit_suggestion_lesson.id,
                 "last_updated_at": datetime.utcnow(),
             }
         },
     )
 
-    logger.info(
-        f"New suggestion `{edit_suggestion_lesson.id}` from `{edit_suggestion_lesson.suggested_by}`."
-    )
+    logger.info(f"New suggestion `{edit_suggestion_lesson.id}` from `{edit_suggestion_lesson.suggested_by}`.")
 
 
 async def edit_lesson(callback: ChatEvent, select: Any, manager: DialogManager, item_id: str):
@@ -256,9 +241,6 @@ async def edit_lesson(callback: ChatEvent, select: Any, manager: DialogManager, 
 
     if LessonLevel.has_value(item_id):
         payload.update({"edit_lesson_level": item_id})
-
-    if LessonStatus.has_value(item_id):
-        payload.update({"edit_lesson_status": item_id})
 
     cursor.suggestions.update_one({"id": suggestion_id}, {"$set": payload})
 

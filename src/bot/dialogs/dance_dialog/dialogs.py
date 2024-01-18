@@ -8,11 +8,9 @@ from aiogram_dialog.widgets.text import Const, Format, Multi
 
 from src.bot.enums import (
     LessonLevel,
-    LessonStatus,
     LessonType,
     SelectLessonLevelFilter,
     SelectLessonOrderFilter,
-    SelectLessonStatusFilter,
     SelectLessonTypeFilter,
 )
 from src.bot.states import DanceDialog
@@ -21,7 +19,6 @@ from .getters import get_dance_data, get_edit_lesson_data, get_lesson_data, get_
 from .handlers import (
     change_level,
     change_order,
-    change_status,
     change_type,
     edit_lesson,
     enter_description,
@@ -34,8 +31,8 @@ from .handlers import (
     save_lesson_filter,
     save_suggestion,
     setup_config,
-    update_info,
     tutorial_id_handler,
+    update_info,
     video_handler,
 )
 
@@ -99,14 +96,12 @@ dance_dialog = Dialog(
             "Here is default searching config:\n"
             + "🔗 Sort order: <b>{lesson_order}</b>\n"
             + "📷 Lesson type: <b>{lesson_type}</b>\n"
-            + "📈 Lesson level: <b>{lesson_level}</b>\n"
-            + "💡 Lesson status: <b>{lesson_status}</b>\n\n"
-            + "<i>Tip: Use buttons below to adjust the current config and start dancing to continue</i>."
+            + "📈 Lesson level: <b>{lesson_level}</b>\n\n"
+            + "<i>💡 Tip: Use buttons below to adjust the current config and start dancing to continue</i>."
         ),
         SwitchTo(
             Const("Find by id 🔎"),
             id="switch_to_specific_lesson",
-            # on_click=save_lesson_filter,
             state=DanceDialog.watch_specific_lesson,
         ),
         Row(
@@ -120,17 +115,10 @@ dance_dialog = Dialog(
                 id="switch_to_filter_type",
                 state=DanceDialog.filter_type,
             ),
-        ),
-        Row(
             SwitchTo(
                 Const("Level 📈"),
                 id="switch_to_filter_level",
                 state=DanceDialog.filter_level,
-            ),
-            SwitchTo(
-                Const("Status 💡"),
-                id="switch_to_filter_status",
-                state=DanceDialog.filter_status,
             ),
         ),
         SwitchTo(
@@ -238,28 +226,16 @@ dance_dialog = Dialog(
         ),
         state=DanceDialog.filter_level,
     ),
-    Window(
-        Const("Chose lesson status 💡"),
-        Select(
-            Format("{item}"),
-            items=[e.value for e in SelectLessonStatusFilter],
-            item_id_getter=lambda x: x,
-            id="config_lesson_status",
-            on_click=change_status,
-        ),
-        state=DanceDialog.filter_status,
-    ),
     # # Show lessons
     Window(
         Multi(
             Format(
-                "🗓 Date: <b>{lesson_date}</b>\n"
+                "🔎 Id: <i>{lesson_id}</i>\n"
+                + "🗓 Date: <b>{lesson_date}</b>\n"
                 + "📷 Type: <b>{lesson_type}</b>\n"
                 + "📈 Level: <b>{lesson_level}</b>\n"
-                + "💡 Status: <b>{lesson_status}</b>\n"
                 + "📝 Description: <b>{lesson_description}</b>\n\n"
-                + f"{html.quote('=== < ~ > ===')}\n\n"
-                + "🔎 Id: <i>{lesson_id}</i>",
+                + f"{html.quote('=== < ~ > ===')}\n\n",
                 when="show_lesson",
             ),
             Format(
@@ -306,23 +282,18 @@ dance_dialog = Dialog(
     ),
     Window(
         Format(
-            "🔎 Id: <i>{lesson_id}</i>\n\n"
-            + f"{html.quote('=== < ~ > ===')}\n\n"
-            + "<u>Current lesson info</u>:\n"
+            "<u>Current lesson info</u>:\n"
+            + "🔎 Id: <i>{lesson_id}</i>\n\n"
             + "🗓 Date: <i>{lesson_date}</i>\n"
             + "📷 Type: <i>{lesson_type}</i>\n"
             + "📈 Level: <i>{lesson_level}</i>\n"
-            + "💡 Status: <i>{lesson_status}</i>\n"
             + "📝 Description: <i>{lesson_description}</i>\n\n"
             + f"{html.quote('=== < ~ > ===')}\n\n"
             + "<u>Suggested changes</u>:\n"
-            + "🗓 Date: <i>Changes are locked</i>\n"
             + "📷 Type: <b>{edit_lesson_type}</b>\n"
             + "📈 Level: <b>{edit_lesson_level}</b>\n"
-            + "💡 Status: <b>{edit_lesson_status}</b>\n"
             + "📝 Description: <b>{edit_lesson_description}</b>\n\n"
-            + f"{html.quote('=== < ~ > ===')}\n\n"
-            + "<i>Edit tip: to update `description` write message in the chat</i>."
+            + "💡 <i>Edit tip: to update `description` write message in the chat</i>."
         ),
         DynamicMedia("lesson_video"),
         SwitchTo(
@@ -338,11 +309,6 @@ dance_dialog = Dialog(
                 Const("Level 📈"),
                 id="switch_to_filter_level",
                 state=DanceDialog.edit_lesson_level,
-            ),
-            SwitchTo(
-                Const("Status 💡"),
-                id="switch_to_filter_status",
-                state=DanceDialog.edit_lesson_status,
             ),
         ),
         SwitchTo(
@@ -402,26 +368,14 @@ dance_dialog = Dialog(
         state=DanceDialog.edit_lesson_level,
     ),
     Window(
-        Const("Lesson status to update 💡"),
-        Select(
-            Format("{item}"),
-            items=[e.value for e in LessonStatus],
-            item_id_getter=lambda x: x,
-            id="edit_lesson_status",
-            on_click=edit_lesson,
-        ),
-        state=DanceDialog.edit_lesson_status,
-    ),
-    Window(
         Format(
             "🔎 Id: <i>{lesson_id}</i>\n\n"
             + f"{html.quote('=== < ~ > ===')}\n\n"
             + "🗓 Date: <b>{lesson_date}</b>\n"
             + "📷 Type: <b>{lesson_type}</b>\n"
             + "📈 Level: <b>{lesson_level}</b>\n"
-            + "💡 Status: <b>{lesson_status}</b>\n"
-            + "📝 Description: <b>{lesson_description}</b>"
-            + "Are you sure you want to remove this lesson?",
+            # + "💡 Status: <b>{lesson_status}</b>\n"
+            + "📝 Description: <b>{lesson_description}</b>" + "Are you sure you want to remove this lesson?",
             when="show_lesson",
         ),
         SwitchTo(

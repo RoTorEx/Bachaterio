@@ -11,15 +11,6 @@ class LessonType(str, Enum):
         return value in cls._value2member_map_
 
 
-class LessonStatus(str, Enum):
-    DISABLE = "disable"
-    ENABLE = "enable"
-
-    @classmethod
-    def has_value(cls, value):
-        return value in cls._value2member_map_
-
-
 class LessonLevel(str, Enum):
     NOVICE = 1
     BEGINNER = 2
