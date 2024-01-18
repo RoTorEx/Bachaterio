@@ -230,7 +230,7 @@ dance_dialog = Dialog(
     Window(
         Multi(
             Format(
-                "🔎 Id: <i>{lesson_id}</i>"
+                "🔎 Id: <i>{lesson_id}</i>\n"
                 + "🗓 Date: <b>{lesson_date}</b>\n"
                 + "📷 Type: <b>{lesson_type}</b>\n"
                 + "📈 Level: <b>{lesson_level}</b>\n"
